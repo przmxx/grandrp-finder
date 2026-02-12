@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>GrandRP Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; }
+        .card { background-color: #161b22; border: 1px solid #30363d; transition: 0.2s; }
+        .card:hover { border-color: #2ea043; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6 flex items-center">
+            <span class="w-1 h-8 bg-green-500 mr-3"></span> GrandRP Finder
+        </h1>
+        
+        <div class="flex gap-4 mb-8">
+            <input type="text" id="search" placeholder="Szukaj ID lub Nicku..." 
+                class="bg-[#0d1117] border border-[#30363d] p-3 rounded-lg w-full md:w-80 focus:outline-none focus:border-green-500">
+            <div class="bg-[#161b22] p-3 rounded-lg border border-[#30363d]">
+                Online: <span id="count" class="text-green-500 font-bold">0</span>
+            </div>
+        </div>
+
+        <div id="list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            </div>
+    </div>
+
+    <script>
+        const proxy = "https://corsproxy.io/?";
+        const url = "https://servers-frontend.fivem.net/api/servers/single/8rml8v";
+        let players = [];
+
+        async function load() {
+            try {
+                const r = await fetch(proxy + encodeURIComponent(url));
+                const d = await r.json();
+                players = d.Data.players || [];
+                render(players);
+            } catch (e) { console.error("Błąd pobierania danych."); }
+        }
+
+        function render(arr) {
+            document.getElementById('count').innerText = arr.length;
+            document.getElementById('list').innerHTML = arr.map(p => `
+                <div class="card p-4 rounded-lg flex justify-between items-center">
+                    <span class="text-green-500 font-bold text-lg">${p.id}</span>
+                    <span class="truncate ml-3 text-sm font-medium text-gray-300">${p.name}</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('search').oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = players.filter(p => p.name.toLowerCase().includes(val) || p.id.toString().includes(val));
+            render(filtered);
+        };
+
+        load();
+        setInterval(load, 15000); // Odświeżaj co 15 sekund
+    </script>
+</body>
+</html>
