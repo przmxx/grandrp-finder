@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Live Status</title>
+    <title>GrandRP Finder | Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0b0e14; color: #e2e8f0; font-family: 'Inter', sans-serif; min-height: 100vh; }
-        .glass { background: rgba(22, 27, 34, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .player-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.03); transition: all 0.2s ease; }
-        .player-card:hover { background: rgba(30, 41, 59, 0.8); border-color: #10b981; transform: translateY(-2px); }
+        body { background-color: #0b0e14; color: #e2e8f0; font-family: sans-serif; }
+        .glass { background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .player-card { background: #161b22; border: 1px solid #30363d; transition: 0.2s; }
+        .player-card:hover { border-color: #10b981; transform: scale(1.02); }
     </style>
 </head>
-<body class="p-4 md:p-12">
-    <div class="max-w-7xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-            <div>
-                <h1 class="text-4xl font-black text-white tracking-tight">GrandRP <span class="text-emerald-500">Finder</span></h1>
-                <p class="text-slate-400 mt-1">Monitoring obywateli wyspy w czasie rzeczywistym</p>
-            </div>
-            <div class="glass px-6 py-4 rounded-2xl flex gap-8">
-                <div class="flex flex-col">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Status</span>
-                    <span id="status" class="text-emerald-400 font-bold flex items-center gap-2">Online</span>
-                </div>
-                <div class="flex flex-col border-l border-slate-700 pl-8">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Graczy</span>
-                    <span id="count" class="text-white text-xl font-bold">0</span>
-                </div>
+<body class="p-6 md:p-12">
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-10">
+            <h1 class="text-3xl font-black text-white">GrandRP <span class="text-emerald-500">Finder</span></h1>
+            <div class="glass px-6 py-3 rounded-xl flex gap-6">
+                <div class="flex flex-col"><span class="text-[10px] text-gray-500 font-bold uppercase">Status</span><span id="status" class="text-emerald-400 font-bold">Łączenie...</span></div>
+                <div class="flex flex-col border-l border-gray-700 pl-6"><span class="text-[10px] text-gray-500 font-bold uppercase">Graczy</span><span id="count" class="text-white font-bold text-xl">0</span></div>
             </div>
         </header>
 
-        <div class="max-w-md mb-12">
-            <input type="text" id="search" placeholder="Szukaj ID lub nicku..." 
-                class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-xl py-4 px-6 focus:outline-none focus:border-emerald-500 transition-all">
-        </div>
+        <input type="text" id="search" placeholder="Szukaj ID lub nicku..." class="w-full max-w-sm bg-gray-900 border border-gray-700 text-white rounded-xl py-3 px-5 mb-10 focus:outline-none focus:border-emerald-500">
 
-        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <div class="col-span-full text-center py-20 text-slate-500 italic">Inicjowanie połączenia z wyspą...</div>
+        <div id="player-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div class="col-span-full text-center py-20 text-gray-500 animate-pulse">Nawiązywanie bezpiecznego połączenia z serwerem...</div>
         </div>
+    </div>
+
+    <script>
+        const serverId = '8rml8v';
+        // Używamy hybrydowego podejścia do proxy
+        const proxyUrl = "https://corsproxy.io/?"; 
+        const targetUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
+        
+        let allPlayers = [];
+
+        async function update() {
+            try {
+                // Dodajemy timestamp, żeby oszukać pamięć podręczną (cache)
+                const response = await fetch(`${proxyUrl}${encodeURIComponent(targetUrl
