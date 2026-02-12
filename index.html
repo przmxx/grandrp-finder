@@ -3,41 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Live</title>
+    <title>GrandRP Finder | Neo Orange</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0b0e14; color: #e2e8f0; font-family: sans-serif; }
-        .glass { background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .player-card { background: #161b22; border: 1px solid #30363d; transition: 0.2s; }
-        .player-card:hover { border-color: #10b981; transform: scale(1.02); }
+        body { 
+            background-color: #05070a; 
+            color: #fafafa; 
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.08) 0%, transparent 50%);
+        }
+        .neo-border {
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.05);
+        }
+        .player-card {
+            background: #0f1218;
+            border-left: 3px solid #f97316;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .player-card:hover {
+            background: #1a1e26;
+            border-left: 3px solid #fb923c;
+            transform: translateX(5px);
+            box-shadow: -10px 0 20px -10px rgba(249, 115, 22, 0.4);
+        }
+        .orange-glow {
+            text-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+        }
+        input:focus {
+            border-color: #f97316 !important;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+        }
     </style>
 </head>
-<body class="p-6 md:p-12">
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-black text-white">GrandRP <span class="text-emerald-500">Finder</span></h1>
-            <div class="glass px-6 py-3 rounded-xl flex gap-6">
-                <div class="flex flex-col"><span class="text-[10px] text-gray-500 font-bold uppercase">Status</span><span id="status" class="text-emerald-400 font-bold">Łączenie...</span></div>
-                <div class="flex flex-col border-l border-gray-700 pl-6"><span class="text-[10px] text-gray-500 font-bold uppercase">Graczy</span><span id="count" class="text-white font-bold text-xl">0</span></div>
+<body class="p-6 md:p-16">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
+            <div>
+                <h1 class="text-5xl font-bold tracking-tighter uppercase italic">
+                    GrandRP <span class="text-orange-500 orange-glow">Finder</span>
+                </h1>
+                <p class="text-slate-500 font-medium tracking-widest mt-2 uppercase text-xs">Live Database Connection established</p>
+            </div>
+            
+            <div class="flex gap-4">
+                <div class="neo-border bg-[#0f1218] px-8 py-4 rounded-sm flex flex-col items-center min-w-[120px]">
+                    <span class="text-[10px] text-orange-500/60 font-bold uppercase tracking-widest">Status</span>
+                    <span id="status" class="text-white font-bold uppercase tracking-tighter">Connecting</span>
+                </div>
+                <div class="neo-border bg-[#0f1218] px-8 py-4 rounded-sm flex flex-col items-center min-w-[120px]">
+                    <span class="text-[10px] text-orange-500/60 font-bold uppercase tracking-widest">Graczy</span>
+                    <span id="count" class="text-orange-500 font-bold text-2xl tracking-tighter orange-glow">0</span>
+                </div>
             </div>
         </header>
 
-        <input type="text" id="search" placeholder="Szukaj ID lub nicku..." class="w-full max-w-sm bg-gray-900 border border-gray-700 text-white rounded-xl py-3 px-5 mb-10 focus:outline-none focus:border-emerald-500">
+        <div class="mb-12">
+            <input type="text" id="search" placeholder="WPISZ ID LUB NICKNAME..." 
+                class="w-full max-w-lg bg-[#0f1218] border border-white/5 rounded-sm py-4 px-6 text-white uppercase font-bold tracking-widest focus:outline-none transition-all placeholder-white/10">
+        </div>
 
-        <div id="player-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <div class="col-span-full text-center py-20 text-gray-500 animate-pulse">Nawiązywanie bezpiecznego połączenia z serwerem...</div>
+        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            <div class="col-span-full py-20 text-center text-orange-500/20 text-3xl font-bold italic tracking-tighter animate-pulse uppercase">
+                Synchronizing with GrandRP API...
+            </div>
         </div>
     </div>
 
     <script>
         const serverId = '8rml8v';
-        // Używamy hybrydowego podejścia do proxy
-        const proxyUrl = "https://corsproxy.io/?"; 
-        const targetUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
-        
-        let allPlayers = [];
-
-        async function update() {
-            try {
-                // Dodajemy timestamp, żeby oszukać pamięć podręczną (cache)
-                const response = await fetch(`${proxyUrl}${encodeURIComponent(targetUrl
+        const proxyUrl = "
