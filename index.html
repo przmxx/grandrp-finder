@@ -3,116 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Tracker - GOAT Edition</title>
+    <title>GrandRP Tracker - Ultra Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #0088ff; --bg: #020202; --goat-color: #ffaa00; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .bg-grid { position: fixed; top: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); z-index: -1; mask-image: linear-gradient(to bottom, transparent, black); }
-        .header { margin-top: 50px; text-align: center; }
-        .header h1 { font-family: 'Orbitron', sans-serif; font-size: 52px; margin: 0; text-shadow: 0 0 25px var(--main); font-style: italic; }
-        .nav-bar { display: flex; align-items: center; gap: 12px; margin: 35px 0; background: rgba(255,255,255,0.03); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
-        .btn { background: transparent; border: 1px solid transparent; color: #555; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
-        .btn.active { border-color: var(--main); color: #fff; box-shadow: 0 0 15px var(--main); }
-        .color-selector { width: 34px; height: 34px; border-radius: 8px; border: 2px solid #fff; position: relative; overflow: hidden; cursor: pointer; }
+        :root { 
+            --main: #0088ff; 
+            --bg: #010101; 
+            --goat-color: #ffaa00; 
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body { 
+            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
+            margin: 0; display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        /* --- NOWE DESIGNERSKIE TŁO --- */
+        .visual-effects {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            overflow: hidden; background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.15), transparent 50%);
+        }
+
+        .aurora {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, var(--main), transparent 40%);
+            opacity: 0.05; filter: blur(100px); animation: drift 20s infinite linear;
+        }
+
+        @keyframes drift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .bg-grid { 
+            position: absolute; top: 0; width: 100%; height: 100%; 
+            background: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), 
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); 
+            background-size: 60px 60px; 
+            transform: perspective(600px) rotateX(45deg); 
+            transform-origin: center top; 
+            mask-image: linear-gradient(to bottom, black, transparent);
+        }
+
+        /* --- UI ELEMENTS --- */
+        .header { margin-top: 60px; text-align: center; position: relative; }
+        .header h1 { 
+            font-family: 'Orbitron', sans-serif; font-size: clamp(40px, 8vw, 65px); 
+            margin: 0; text-shadow: 0 0 30px var(--main); font-style: italic; 
+            letter-spacing: -3px;
+        }
+        .header span { color: var(--main); transition: 0.3s; }
+
+        .nav-bar { 
+            display: flex; align-items: center; gap: 15px; margin: 40px 0; 
+            background: var(--glass); padding: 12px 25px; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .btn { 
+            background: transparent; border: 1px solid transparent; color: #666; 
+            padding: 10px 22px; border-radius: 10px; cursor: pointer; 
+            font-weight: 700; text-transform: uppercase; font-size: 13px; transition: 0.3s;
+        }
+        .btn.active { background: rgba(255,255,255,0.05); color: #fff; border-color: var(--main); box-shadow: 0 0 20px var(--main); }
+
+        .color-selector { 
+            width: 38px; height: 38px; border-radius: 12px; border: 2px solid #fff; 
+            position: relative; overflow: hidden; cursor: pointer; 
+        }
         #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
-        .search-input { width: 90%; max-width: 650px; background: transparent; border: none; border-bottom: 2px solid var(--main); padding: 12px; color: #fff; font-size: 32px; text-align: center; outline: none; font-family: 'Orbitron', sans-serif; letter-spacing: 5px; }
-        .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 3px; font-size: 14px; }
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 25px; width: 92%; max-width: 1300px; padding-bottom: 60px; }
+
+        .search-wrap { width: 90%; max-width: 750px; text-align: center; }
+        .search-input { 
+            width: 100%; background: transparent; border: none; 
+            border-bottom: 2px solid var(--main); padding: 15px; 
+            color: #fff; font-size: 36px; text-align: center; outline: none; 
+            font-family: 'Orbitron', sans-serif; letter-spacing: 8px; transition: 0.4s;
+        }
+        .search-input:focus { border-bottom-width: 4px; text-shadow: 0 0 20px var(--main); }
+
+        .status-bar { margin: 30px 0; font-weight: 700; color: var(--main); letter-spacing: 4px; font-size: 15px; text-shadow: 0 0 10px var(--main); }
+
+        /* --- KAFELKI --- */
+        #results { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); 
+            gap: 30px; width: 94%; max-width: 1400px; padding-bottom: 80px; 
+        }
+
+        .player-card { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%); 
+            border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 24px; 
+            position: relative; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); 
+            backdrop-filter: blur(15px); overflow: hidden;
+        }
+        .player-card::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
+            transform: rotate(45deg); transition: 0.5s;
+        }
+        .player-card:hover { transform: translateY(-12px); border-color: var(--main); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .player-card:hover::after { left: 100%; }
+
+        .label { font-size: 11px; font-weight: 900; padding: 4px 12px; border-radius: 6px; display: inline-block; margin-bottom: 20px; color: #000; }
+        .label-cwela { background: var(--main); box-shadow: 0 0 15px rgba(var(--main-rgb), 0.3); }
+        .label-goat { background: var(--goat-color); box-shadow: 0 0 20px var(--goat-color); }
         
-        .player-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 25px; border-radius: 18px; position: relative; transition: 0.4s; backdrop-filter: blur(12px); }
-        .player-card:hover { transform: translateY(-8px); border-color: var(--main); }
+        .name { font-size: 24px; font-weight: 700; letter-spacing: 0.5px; }
+        .id-container { position: absolute; bottom: 30px; right: 30px; text-align: right; }
+        .id-value { color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; opacity: 0.8; }
         
-        .label { font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; color: #000; }
-        .label-cwela { background: var(--main); }
-        .label-goat { background: var(--goat-color); box-shadow: 0 0 15px var(--goat-color); }
-        
-        .name { font-size: 22px; font-weight: 700; word-break: break-all; }
-        .id-container { position: absolute; bottom: 25px; right: 25px; text-align: right; }
-        .id-value { color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; }
-        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.04); }
-        .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
+        .star-fav { position: absolute; top: 30px; right: 30px; cursor: pointer; font-size: 24px; color: rgba(255,255,255,0.05); transition: 0.3s; }
+        .star-fav:hover { transform: scale(1.3); color: #fff; }
+        .star-fav.is-active { color: var(--main); text-shadow: 0 0 20px var(--main); }
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="header"><h1>GRANDRP <span>TRACKER</span></h1></div>
-    <div class="nav-bar">
-        <button class="btn active" id="filter-all" onclick="updateFilter('all')">WSZYSCY</button>
-        <button class="btn" id="filter-fav" onclick="updateFilter('fav')">ULUBIONE</button>
-        <button class="btn" onclick="fetchServerData()">ODŚWIEŻ ↻</button>
-        <div class="color-selector" id="theme-preview" style="background: #0088ff;"><input type="color" id="colorPicker" value="#0088ff"></div>
+    <div class="visual-effects">
+        <div class="aurora" id="aurora-bg"></div>
+        <div class="bg-grid"></div>
     </div>
-    <input type="text" id="searchInput" class="search-input" placeholder="SZUKAJ..." oninput="render()">
-    <div class="status-bar">ONLINE: <span id="onlineCount">0</span></div>
+    
+    <div class="header"><h1>GRANDRP <span>TRACKER</span></h1></div>
+    
+    <div class="nav-bar">
+        <button class="btn active" id="f-all" onclick="updF('all')">WSZYSCY</button>
+        <button class="btn" id="f-fav" onclick="updF('fav')">ULUBIONE</button>
+        <button class="btn" onclick="fetchS()">ODŚWIEŻ ↻</button>
+        <div class="color-selector" id="t-prev" style="background: #0088ff;"><input type="color" id="colorPicker" value="#0088ff"></div>
+    </div>
+
+    <div class="search-wrap">
+        <input type="text" id="sInput" class="search-input" placeholder="WYSZUKAJ..." oninput="draw()">
+        <div class="status-bar">LIVE ONLINE: <span id="oCount">0</span></div>
+    </div>
+
     <div id="results"></div>
 
     <script>
-        const serverCode = "8rml8v";
+        const sID = "8rml8v";
         const proxy = "https://corsproxy.io/?";
         let players = [];
-        let favs = JSON.parse(localStorage.getItem('grand_tracker_favs')) || [];
-        let activeFilter = 'all';
+        let favs = JSON.parse(localStorage.getItem('g_tracker_v5')) || [];
+        let filter = 'all';
 
         const cp = document.getElementById('colorPicker');
         cp.addEventListener('input', (e) => {
-            const val = e.target.value;
-            document.documentElement.style.setProperty('--main', val);
-            document.getElementById('theme-preview').style.background = val;
+            const v = e.target.value;
+            document.documentElement.style.setProperty('--main', v);
+            document.getElementById('t-prev').style.background = v;
+            document.getElementById('aurora-bg').style.background = `radial-gradient(circle at 50% 50%, ${v}, transparent 40%)`;
         });
 
-        async function fetchServerData() {
+        async function fetchS() {
             try {
-                const timestamp = new Date().getTime();
-                const apiUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverCode}?v=${timestamp}`;
-                const response = await fetch(proxy + encodeURIComponent(apiUrl));
-                const json = await response.json();
-                players = json.Data.players || [];
-                document.getElementById('onlineCount').innerText = players.length;
-                render();
-            } catch (err) { console.error("Błąd API"); }
+                const res = await fetch(`${proxy}${encodeURIComponent(`https://servers-frontend.fivem.net/api/servers/single/${sID}?v=${Date.now()}`)}`);
+                const d = await res.json();
+                players = d.Data.players || [];
+                document.getElementById('oCount').innerText = players.length;
+                draw();
+            } catch (err) { console.error("API error"); }
         }
 
-        function toggleFav(name) {
-            favs.includes(name) ? favs = favs.filter(n => n !== name) : favs.push(name);
-            localStorage.setItem('grand_tracker_favs', JSON.stringify(favs));
-            render();
+        function toggleFav(n) {
+            favs.includes(n) ? favs = favs.filter(x => x !== n) : favs.push(n);
+            localStorage.setItem('g_tracker_v5', JSON.stringify(favs));
+            draw();
         }
 
-        function updateFilter(f) {
-            activeFilter = f;
-            document.getElementById('filter-all').classList.toggle('active', f === 'all');
-            document.getElementById('filter-fav').classList.toggle('active', f === 'fav');
-            render();
+        function updF(f) {
+            filter = f;
+            document.getElementById('f-all').classList.toggle('active', f === 'all');
+            document.getElementById('f-fav').classList.toggle('active', f === 'fav');
+            draw();
         }
 
-        function render() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const container = document.getElementById('results');
-            let list = players.filter(p => p.name.toLowerCase().includes(term) || p.id.toString().includes(term));
-            
-            if (activeFilter === 'fav') list = list.filter(p => favs.includes(p.name));
+        function draw() {
+            const s = document.getElementById('sInput').value.toLowerCase();
+            const res = document.getElementById('results');
+            let list = players.filter(p => p.name.toLowerCase().includes(s) || p.id.toString().includes(s));
+            if (filter === 'fav') list = list.filter(p => favs.includes(p.name));
 
-            container.innerHTML = list.map(p => {
-                const lowerName = p.name.toLowerCase();
-                // Sprawdzanie bez względu na wielkość liter
-                const isGoat = lowerName.includes('przmx') || lowerName.includes('kejcpi');
-                const labelText = isGoat ? "NICK GOAT'A" : "NICK CWELA";
-                const labelClass = isGoat ? "label-goat" : "label-cwela";
-
-                return `
+            container = '';
+            list.forEach(p => {
+                const low = p.name.toLowerCase();
+                const isG = low.includes('przmx') || low.includes('kejcpi');
+                container += `
                 <div class="player-card">
-                    <div class="label ${labelClass}">${labelText}</div>
+                    <div class="label ${isG ? 'label-goat' : 'label-cwela'}">${isG ? "NICK GOAT'A" : "NICK CWELA"}</div>
                     <div class="name">${p.name}</div>
                     <span class="star-fav ${favs.includes(p.name) ? 'is-active' : ''}" onclick="toggleFav('${p.name}')">★</span>
                     <div class="id-container"><span class="id-value">#${p.id}</span></div>
-                </div>
-                `;
-            }).join('');
+                </div>`;
+            });
+            res.innerHTML = container;
         }
 
-        fetchServerData();
-        setInterval(fetchServerData, 30000);
+        fetchS();
+        setInterval(fetchS, 30000);
     </script>
 </body>
 </html>
