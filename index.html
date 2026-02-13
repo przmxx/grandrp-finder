@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Pro Dashboard</title>
+    <title>GrandRP Finder | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -37,23 +37,19 @@
             box-shadow: 0 10px 20px -5px var(--accent-glow);
         }
 
-        /* Styl listy rozwijanej */
         .server-select {
             background: rgba(15, 17, 20, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             padding: 10px 20px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             cursor: pointer;
             outline: none;
-            transition: 0.3s;
         }
-
-        .server-select:hover { border-color: var(--accent-color); }
 
         .search-container {
             background: #0d0f12;
@@ -83,9 +79,9 @@
 
             <div class="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/5">
                 <select id="srvSelector" onchange="handleServerChange(this.value)" class="server-select">
-                    <option value="8rml8v">GrandRP (8RML8V)</option>
-                    <option value="dyrx5y">BetterSide RP (DYRX5Y)</option>
-                    <option value="custom">-- DODAJ WŁASNY KOD --</option>
+                    <option value="8rml8v">GrandRP</option>
+                    <option value="dyrx5y">BetterSide RP</option>
+                    <option value="custom">DODAJ WŁASNY</option>
                 </select>
 
                 <div class="border-l border-white/10 pl-4 py-1">
@@ -94,15 +90,15 @@
             </div>
         </div>
 
-        <div class="max-w-3xl mx-auto mb-16">
-            <div class="search-container rounded-xl overflow-hidden shadow-2xl">
+        <div class="max-w-3xl mx-auto mb-16 text-center">
+            <div class="search-container rounded-xl overflow-hidden shadow-2xl mb-6">
                 <input type="text" id="search" placeholder="SZUKAJ CWELA..." 
-                    class="w-full bg-transparent py-6 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter">
+                    class="w-full bg-transparent py-6 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter text-center">
             </div>
-            <div class="mt-4 text-center">
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
-                    Sektor: <span id="currentIdDisplay" class="text-white">8RML8V</span> | Aktywnych: <span id="count" class="text-lg italic font-extrabold" style="color: var(--accent-color)">0</span>
-                </span>
+            
+            <div class="inline-flex items-center gap-4 px-8 py-2 rounded-full bg-white/5 border border-white/5">
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">WYKRYTYCH CWELI:</span>
+                <span id="count" class="text-2xl italic font-black" style="color: var(--accent-color)">0</span>
             </div>
         </div>
 
@@ -118,11 +114,10 @@
             const root = document.documentElement;
             root.style.setProperty('--accent-color', color);
             root.style.setProperty('--accent-glow', color + '44');
-            localStorage.setItem('grand_theme_v2', color);
+            localStorage.setItem('grand_theme_v3', color);
         }
 
         async function fetchData() {
-            document.getElementById('currentIdDisplay').innerText = currentSrv.toUpperCase();
             const proxy = "https://api.allorigins.win/raw?url=";
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentSrv}`;
             try {
@@ -133,7 +128,7 @@
                     render(allData);
                 }
             } catch (e) {
-                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase tracking-widest">Błąd połączenia z tym kodem</div>';
+                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase tracking-widest">Błąd połączenia</div>';
             }
         }
 
@@ -149,7 +144,7 @@
             container.innerHTML = list.map(p => `
                 <div class="neo-card p-5 rounded-xl relative group">
                     <div class="flex flex-col">
-                        <span class="text-[7px] font-black text-white/20 uppercase tracking-widest mb-1 leading-none text-left">ID CWELA</span>
+                        <span class="text-[7px] font-black text-white/20 uppercase tracking-widest mb-1 text-left">ID CWELA</span>
                         <span class="text-3xl font-black text-white mb-3 leading-none italic text-left">${p.id}</span>
                         <div class="h-[2px] w-4 transition-all group-hover:w-full" style="background: var(--accent-color)"></div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase truncate mt-3 text-left">${p.name}</span>
@@ -160,14 +155,13 @@
 
         function handleServerChange(val) {
             if (val === 'custom') {
-                const newId = prompt("Wprowadź nowy Join ID serwera (np. 8rml8v):");
+                const newId = prompt("Wprowadź nowy Join ID serwera:");
                 if (newId && newId.trim().length > 3) {
                     currentSrv = newId.trim().toLowerCase();
-                    // Dodaj nową opcję do listy
                     const select = document.getElementById('srvSelector');
                     const opt = document.createElement('option');
                     opt.value = currentSrv;
-                    opt.innerHTML = `WŁASNY (${currentSrv.toUpperCase()})`;
+                    opt.innerHTML = `WŁASNY: ${currentSrv.toUpperCase()}`;
                     select.add(opt, select.options[select.options.length - 1]);
                     select.value = currentSrv;
                 } else {
@@ -179,7 +173,7 @@
             fetchData();
         }
 
-        const saved = localStorage.getItem('grand_theme_v2');
+        const saved = localStorage.getItem('grand_theme_v3');
         if (saved) {
             applyTheme(saved);
             document.getElementById('picker').value = saved;
