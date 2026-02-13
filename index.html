@@ -34,7 +34,6 @@
         <div class="modal-box text-center" onclick="event.stopPropagation()">
             <h2 id="modalName" class="text-3xl font-black italic uppercase mb-2 text-white">---</h2>
             <div id="modalStatus" class="font-bold mb-6 uppercase text-xl">---</div>
-            
             <div class="grid grid-cols-2 gap-4 mb-6 text-left">
                 <div class="bg-white/5 p-3 rounded border border-white/5">
                     <span class="text-[9px] text-white/30 uppercase block font-bold">Czas Sesji</span>
@@ -45,7 +44,6 @@
                     <span id="modalLastSeen" class="text-lg font-black text-white">---</span>
                 </div>
             </div>
-
             <div class="bg-white/5 p-4 rounded text-[10px] font-mono text-blue-300 break-all border border-white/5">
                 <span class="block text-white/20 mb-2 uppercase tracking-widest font-bold">Historia ID</span>
                 <span id="modalLogs"></span>
@@ -85,7 +83,7 @@
     </div>
 
     <script>
-        const srv = '8rml8v'; // ID GrandRP
+        const srv = '8rml8v'; 
         let players = [], favorites = JSON.parse(localStorage.getItem('przmx_favs')) || [], onlyFavs = false;
 
         function getHist() { 
@@ -120,11 +118,11 @@
 
             const url = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
             
-            // 3 szybkie proxy w wyścigu
+            // CodeTabs jest często najszybszy. CorsProxy jako backup.
             const endpoints = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
                 `https://api.corsproxy.io/?url=${encodeURIComponent(url)}`,
-                `https://thingproxy.freeboard.io/fetch/${url}`
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
             ];
 
             const fetchWithTimeout = (u, ms) => {
@@ -135,14 +133,15 @@
             };
 
             try {
-                // Promise.any weźmie PIERWSZĄ udaną odpowiedź
-                const response = await Promise.any(endpoints.map(e => fetchWithTimeout(e, 4000).then(r => r.json())));
+                // Wyścig z timeoutem 2.5 sekundy. Jak jeden nie zdąży, bierze inny.
+                const response = await Promise.any(endpoints.map(e => fetchWithTimeout(e, 2500).then(r => r.json())));
                 
                 if (response?.Data?.players) {
                     processData(response.Data.players);
                     statusText.innerText = "ONLINE:";
                 }
             } catch (e) {
+                console.log("Network lag, showing cached data");
                 statusText.innerText = "OFFLINE MODE";
                 statusText.style.color = "#ef4444";
             } finally {
@@ -228,7 +227,6 @@
             
             document.getElementById('modalSession').innerText = isOnline ? `${sessionMins} min` : "-";
             document.getElementById('modalLastSeen').innerText = lastSeenTime;
-            
             document.getElementById('modalLogs').innerText = h.ids.join(' → ');
             document.getElementById('overlay').style.display = 'flex';
         }
