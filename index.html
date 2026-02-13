@@ -3,30 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Neo Orange</title>
+    <title>GrandRP Finder | Neo Orange v4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         body { 
-            background-color: #05070a; 
-            color: #fafafa; 
-            font-family: 'Rajdhani', sans-serif;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.12) 0%, transparent 50%);
+            background-color: #05070a; color: #fafafa; font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh; background-image: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.15) 0%, transparent 50%);
         }
-        .neo-border { border: 1px solid rgba(249, 115, 22, 0.2); }
-        .orange-glow { text-shadow: 0 0 15px rgba(249, 115, 22, 0.6); }
+        .orange-glow { text-shadow: 0 0 20px rgba(249, 115, 22, 0.7); }
+        .neo-border { border: 1px solid rgba(249, 115, 22, 0.3); box-shadow: inset 0 0 10px rgba(249, 115, 22, 0.05); }
         .player-card {
-            background: rgba(15, 18, 24, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-left: 4px solid #f97316;
-            transition: all 0.3s ease;
+            background: rgba(15, 18, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #f97316; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .player-card:hover {
-            transform: translateX(8px);
-            background: #1a1e26;
-            box-shadow: -10px 0 30px -10px rgba(249, 115, 22, 0.5);
-        }
+        .player-card:hover { transform: scale(1.05) translateX(5px); border-color: #f97316; box-shadow: -15px 0 30px -10px rgba(249, 115, 22, 0.6); }
+        @keyframes pulse-orange { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .loading-pulse { animation: pulse-orange 1.5s infinite; }
     </style>
 </head>
 <body class="p-6 md:p-16">
@@ -34,94 +27,102 @@
     <div class="max-w-7xl mx-auto">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
             <div>
-                <h1 class="text-6xl font-black tracking-tighter uppercase italic text-white">
+                <h1 class="text-6xl font-black tracking-tighter uppercase italic text-white leading-none">
                     GRANDRP <span class="text-orange-500 orange-glow">FINDER</span>
                 </h1>
-                <p class="text-orange-500/40 font-bold tracking-[0.3em] mt-2 uppercase text-[10px]">Direct link established via: 8rml8v</p>
+                <p class="text-orange-500/50 font-bold tracking-[0.4em] mt-3 uppercase text-[10px]">Security Protocol Bypass | ID: 8rml8v</p>
             </div>
             
             <div class="flex gap-4">
-                <div class="neo-border bg-[#0f1218]/80 px-8 py-5 rounded-sm flex flex-col items-center min-w-[140px]">
-                    <span class="text-[10px] text-orange-500/60 font-bold uppercase tracking-widest">Connection</span>
-                    <span id="status" class="text-white font-bold uppercase tracking-tighter animate-pulse">Scanning...</span>
+                <div class="neo-border bg-[#0f1218] px-10 py-6 rounded-sm flex flex-col items-center min-w-[160px]">
+                    <span class="text-[10px] text-orange-500/60 font-bold uppercase tracking-widest mb-1">Link Status</span>
+                    <span id="status" class="text-white font-bold uppercase tracking-tighter loading-pulse">Searching...</span>
                 </div>
-                <div class="neo-border bg-[#0f1218]/80 px-8 py-5 rounded-sm flex flex-col items-center min-w-[140px]">
-                    <span class="text-[10px] text-orange-500/60 font-bold uppercase tracking-widest">Active ID</span>
-                    <span id="count" class="text-orange-500 font-bold text-3xl tracking-tighter orange-glow">0</span>
+                <div class="neo-border bg-[#0f1218] px-10 py-6 rounded-sm flex flex-col items-center min-w-[160px]">
+                    <span class="text-[10px] text-orange-500/60 font-bold uppercase tracking-widest mb-1">Active Souls</span>
+                    <span id="count" class="text-orange-500 font-bold text-4xl tracking-tighter orange-glow">0</span>
                 </div>
             </div>
         </header>
 
-        <div class="mb-12 relative max-w-xl">
-            <input type="text" id="search" placeholder="SEARCH CITIZEN ID OR NAME..." 
-                class="w-full bg-[#0f1218] border border-orange-500/20 rounded-sm py-5 px-8 text-white uppercase font-bold tracking-widest focus:outline-none focus:border-orange-500 transition-all placeholder-white/5">
+        <div class="mb-12 max-w-xl">
+            <input type="text" id="search" placeholder="INPUT TARGET ID OR NICKNAME..." 
+                class="w-full bg-[#0f1218] border-b-2 border-orange-500/30 py-5 px-0 text-white uppercase font-bold tracking-[0.2em] focus:outline-none focus:border-orange-500 transition-all placeholder-white/10 text-xl">
         </div>
 
-        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <div id="loader" class="col-span-full py-24 text-center">
-                <p class="text-orange-500 text-2xl font-bold tracking-tighter uppercase italic animate-bounce">
-                    Synchronizing with GrandRP API [8rml8v]...
+        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <div id="loader" class="col-span-full py-32 text-center">
+                <p class="text-orange-500 text-3xl font-black tracking-widest uppercase italic loading-pulse">
+                    Intercepting Data Stream...
                 </p>
-                <p class="text-slate-600 text-xs mt-2 uppercase tracking-widest">Bypassing security protocols...</p>
+                <p id="sub-loader" class="text-slate-600 text-[10px] mt-4 uppercase tracking-[0.5em]">Attempting proxy layer 1/3</p>
             </div>
         </div>
     </div>
 
     <script>
         const serverId = '8rml8v';
-        // Wykorzystujemy proxy, aby ominąć błąd CORS
-        const proxy = "https://api.allorigins.win/get?url=";
         const target = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
         
+        // Tablica różnych proxy na wypadek blokady
+        const proxies = [
+            (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+            (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+            (url) => `https://thingproxy.freeboard.io/fetch/${url}`
+        ];
+
         let allPlayers = [];
+        let currentProxyIndex = 0;
 
         async function fetchData() {
+            const subLoader = document.getElementById('sub-loader');
+            
             try {
-                // Budujemy zapytanie przez proxy
-                const response = await fetch(`${proxy}${encodeURIComponent(target)}`);
+                const response = await fetch(proxies[currentProxyIndex](target) + `&cache=${Date.now()}`);
                 const json = await response.json();
                 
-                // Parsujemy zawartość (AllOrigins zwraca dane w polu 'contents')
-                const data = JSON.parse(json.contents);
-
-                if (data && data.Data && data.Data.players) {
-                    allPlayers = data.Data.players;
+                // Różne proxy zwracają dane w różnej strukturze
+                let rawData = json.contents ? JSON.parse(json.contents) : json;
+                
+                if (rawData?.Data?.players) {
+                    allPlayers = rawData.Data.players;
                     renderPlayers(allPlayers);
-                    document.getElementById('status').innerText = "Established";
-                    document.getElementById('status').classList.remove('animate-pulse');
-                    document.getElementById('status').classList.add('text-orange-500');
+                    const statusEl = document.getElementById('status');
+                    statusEl.innerText = "Stabilized";
+                    statusEl.classList.remove('loading-pulse');
+                    statusEl.classList.add('text-orange-500');
                 } else {
-                    throw new Error("Empty data");
+                    throw new Error("Invalid structure");
                 }
             } catch (err) {
-                console.error("Fetch error:", err);
-                document.getElementById('status').innerText = "Offline/Hidden";
-                document.getElementById('status').classList.add('text-red-500');
-                document.getElementById('loader').innerHTML = "<span class='text-red-500'>API ERROR: Serwer może mieć ukrytą listę graczy.</span>";
+                console.error(`Proxy ${currentProxyIndex + 1} failed`);
+                currentProxyIndex = (currentProxyIndex + 1) % proxies.length;
+                if(subLoader) subLoader.innerText = `Switching to proxy layer ${currentProxyIndex + 1}/3`;
+                setTimeout(fetchData, 2000); // Spróbuj ponownie za 2 sekundy z innym proxy
             }
         }
 
         function renderPlayers(players) {
             const container = document.getElementById('player-list');
             const loader = document.getElementById('loader');
-            if (loader) loader.style.display = 'none';
+            if (loader) loader.remove();
 
             document.getElementById('count').innerText = players.length;
             
             if (players.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-10 opacity-30 uppercase italic">No citizens detected in sector.</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-20 opacity-20 text-2xl font-bold uppercase italic">Sector Vacant. No citizens found.</div>';
                 return;
             }
 
             container.innerHTML = players.map(p => `
-                <div class="player-card p-5 flex items-center justify-between">
+                <div class="player-card p-6 flex items-center justify-between">
                     <div class="flex flex-col">
-                        <span class="text-[9px] text-orange-500/40 font-bold uppercase tracking-tighter">Sector ID</span>
-                        <span class="text-2xl font-black text-white tracking-tighter">${p.id}</span>
+                        <span class="text-[9px] text-orange-500/40 font-bold uppercase tracking-widest">ID</span>
+                        <span class="text-3xl font-black text-white tracking-tighter">${p.id}</span>
                     </div>
-                    <div class="text-right flex flex-col items-end overflow-hidden">
-                        <span class="text-[9px] text-slate-600 font-bold uppercase">Subject</span>
-                        <span class="text-sm font-bold text-slate-300 truncate w-full" title="${p.name}">${p.name}</span>
+                    <div class="text-right flex flex-col items-end overflow-hidden max-w-[120px]">
+                        <span class="text-[9px] text-slate-600 font-bold uppercase tracking-widest text-[8px]">Subject</span>
+                        <span class="text-sm font-bold text-slate-300 truncate w-full uppercase tracking-tighter" title="${p.name}">${p.name}</span>
                     </div>
                 </div>
             `).join('');
@@ -129,4 +130,14 @@
 
         document.getElementById('search').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            const filtered = allPlayers
+            const filtered = allPlayers.filter(p => 
+                p.name.toLowerCase().includes(term) || p.id.toString().includes(term)
+            );
+            renderPlayers(filtered);
+        });
+
+        fetchData();
+        setInterval(fetchData, 45000); // Odświeżaj co 45 sekund, żeby nie zbanowali proxy
+    </script>
+</body>
+</html>
