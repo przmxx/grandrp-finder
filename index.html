@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Multi-Server Tracker - Pro Modal</title>
+    <title>Elite Multi-Server Tracker - GOAT Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -71,9 +71,21 @@
 
         .label { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; color: #000; text-transform: uppercase; }
         .label-cwela { background: var(--main); }
-        .label-goat { background: var(--goat-color); box-shadow: 0 0 15px var(--goat-color); }
         
-        .name { font-size: 20px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75%; display: block; }
+        /* POPRAWIONY NICK GOAT'A */
+        .label-goat { 
+            background: var(--goat-color); 
+            box-shadow: 0 0 20px var(--goat-color), 0 0 40px rgba(255, 170, 0, 0.4); 
+            animation: pulse-goat 2s infinite;
+        }
+
+        @keyframes pulse-goat {
+            0% { box-shadow: 0 0 15px var(--goat-color); }
+            50% { box-shadow: 0 0 35px var(--goat-color); }
+            100% { box-shadow: 0 0 15px var(--goat-color); }
+        }
+        
+        .name { font-size: 20px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; display: block; }
         .id-val { position: absolute; bottom: 25px; right: 25px; color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; opacity: 0.8; }
         .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); z-index: 5; }
         .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
@@ -262,7 +274,8 @@
             if (filter === 'fav') list = list.filter(p => favs.includes(p.name));
 
             res.innerHTML = list.map(p => {
-                const isG = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
+                const low = p.name.toLowerCase();
+                const isG = low.includes('przmx') || low.includes('kejcpi');
                 return `
                 <div class="player-card" onclick='openModal(${JSON.stringify(p)})'>
                     <div class="label ${isG ? 'label-goat' : 'label-cwela'}">${isG ? "NICK GOAT'A" : "NICK CWELA"}</div>
