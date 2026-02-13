@@ -19,7 +19,7 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- TŁO --- */
+        /* --- TŁO I EFEKTY --- */
         .visual-effects {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.1), transparent 50%);
@@ -38,67 +38,58 @@
             transform-origin: center top; mask-image: linear-gradient(to bottom, black, transparent);
         }
 
-        /* --- NOWY DESIGN NAGŁÓWKA --- */
+        /* --- DESIGN NAGŁÓWKA --- */
         .header { margin-top: 60px; text-align: center; position: relative; }
         .header h1 { 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: clamp(35px, 8vw, 70px); 
-            font-weight: 900; margin: 0; 
-            text-transform: uppercase;
-            font-style: italic;
-            color: transparent;
-            -webkit-text-stroke: 1px var(--main);
-            filter: drop-shadow(0 0 15px var(--main));
-            letter-spacing: -2px;
-            line-height: 0.9;
+            font-family: 'Orbitron', sans-serif; font-size: clamp(35px, 8vw, 70px); 
+            font-weight: 900; margin: 0; font-style: italic; color: transparent;
+            -webkit-text-stroke: 1px var(--main); filter: drop-shadow(0 0 15px var(--main));
+            letter-spacing: -2px; line-height: 0.9; text-transform: uppercase;
         }
-        .header h1 span {
-            color: var(--main);
-            -webkit-text-stroke: 0;
-            text-shadow: 0 0 30px var(--main);
-        }
+        .header h1 span { color: var(--main); -webkit-text-stroke: 0; text-shadow: 0 0 30px var(--main); }
         .author-tag {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            letter-spacing: 5px;
-            color: #fff;
-            opacity: 0.6;
-            margin-top: 10px;
-            text-transform: uppercase;
-            display: block;
+            font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 5px;
+            color: #fff; opacity: 0.5; margin-top: 10px; text-transform: uppercase; display: block;
         }
         .author-tag b { color: var(--main); text-shadow: 0 0 10px var(--main); }
 
-        /* --- SERWERY I NAWIGACJA --- */
-        .server-selector { display: flex; gap: 10px; margin-top: 30px; justify-content: center; }
+        /* --- NAWIGACJA I SERWERY --- */
+        .server-selector { display: flex; gap: 10px; margin-top: 30px; justify-content: center; flex-wrap: wrap; }
+        .nav-bar { 
+            display: flex; align-items: center; gap: 15px; margin: 30px 0; 
+            background: var(--glass); padding: 12px 25px; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px);
+        }
+        .btn { background: transparent; border: 1px solid transparent; color: #666; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: 700; text-transform: uppercase; font-size: 11px; transition: 0.3s; }
+        .btn.active { background: rgba(255,255,255,0.05); color: #fff; border-color: var(--main); box-shadow: 0 0 20px var(--main); }
+        .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; text-shadow: 0 0 10px var(--main); }
+
         .custom-input-box {
             margin-top: 20px; display: flex; gap: 10px; max-height: 0; opacity: 0; overflow: hidden;
-            transition: all 0.4s ease; background: var(--glass); border-radius: 15px;
+            transition: all 0.4s ease; background: rgba(255,255,255,0.02); border-radius: 15px;
         }
         .custom-input-box.visible { max-height: 100px; opacity: 1; padding: 15px 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .small-input { background: rgba(0,0,0,0.5); border: 1px solid var(--main); color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron'; text-align: center; outline: none; }
+        .small-input { background: rgba(0,0,0,0.5); border: 1px solid var(--main); color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron'; text-align: center; font-size: 14px; outline: none; }
 
-        .nav-bar { display: flex; align-items: center; gap: 15px; margin: 30px 0; background: var(--glass); padding: 12px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); }
-        .btn { background: transparent; border: 1px solid transparent; color: #666; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: 700; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
-        .btn.active { background: rgba(255,255,255,0.05); color: #fff; border-color: var(--main); box-shadow: 0 0 20px var(--main); }
-        .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; }
+        .search-wrap { width: 90%; max-width: 750px; text-align: center; }
+        .search-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--main); padding: 15px; color: #fff; font-size: 32px; text-align: center; outline: none; font-family: 'Orbitron', sans-serif; letter-spacing: 6px; }
 
-        .search-input { width: 90%; max-width: 750px; background: transparent; border: none; border-bottom: 2px solid var(--main); padding: 15px; color: #fff; font-size: 32px; text-align: center; outline: none; font-family: 'Orbitron', sans-serif; letter-spacing: 6px; }
+        .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 4px; font-size: 14px; text-shadow: 0 0 10px var(--main); }
 
-        /* --- KARTA GRACZA --- */
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 25px; width: 94%; max-width: 1400px; padding-bottom: 80px; margin-top: 30px;}
+        /* --- KAFELKI --- */
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 25px; width: 94%; max-width: 1400px; padding-bottom: 80px; }
         .player-card { 
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); 
             border: 1px solid rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; 
-            position: relative; transition: all 0.3s; backdrop-filter: blur(15px); cursor: pointer;
+            position: relative; transition: all 0.4s; backdrop-filter: blur(15px); cursor: pointer;
         }
-        .player-card:hover { transform: translateY(-5px); border-color: var(--main); }
+        .player-card:hover { transform: translateY(-8px); border-color: var(--main); box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
         .label { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; color: #000; text-transform: uppercase; }
         .label-cwela { background: var(--main); }
         .label-goat { background: var(--goat-color); box-shadow: 0 0 15px var(--goat-color); }
-        .name { font-size: 20px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75%; display: block; }
+        .name { font-size: 22px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; display: block; }
         .id-val { position: absolute; bottom: 25px; right: 25px; color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; opacity: 0.8; }
-        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); }
+        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); z-index: 5; }
         .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
         /* --- MODAL --- */
@@ -108,7 +99,7 @@
         .modal-name { font-size: 32px; font-family: 'Orbitron'; font-weight: 900; text-align: center; margin-bottom: 25px; }
         .detail-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .detail-label { color: var(--main); font-weight: bold; text-transform: uppercase; font-size: 12px; }
-        .detail-value { font-family: 'Orbitron'; color: #fff; }
+        .detail-value { font-family: 'Orbitron'; color: #fff; font-size: 16px; }
 
         .color-selector { width: 38px; height: 38px; border-radius: 12px; border: 2px solid #fff; position: relative; overflow: hidden; cursor: pointer; }
         #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
@@ -123,8 +114,8 @@
             <div id="modal-name" class="modal-name"></div>
             <div class="detail-row"><span class="detail-label">Czas sesji:</span><span id="modal-time" class="detail-value"></span></div>
             <div class="detail-row"><span class="detail-label">Historia ID (24h):</span><span id="modal-ids" class="detail-value"></span></div>
-            <div class="detail-row"><span class="detail-label">Status:</span><span style="color:var(--main)">ONLINE</span></div>
-            <div style="margin-top: 30px; text-align: center; opacity: 0.3; font-size: 10px;">ESC LUB KLIKNIJ OBOK, ABY ZAMKNĄĆ</div>
+            <div class="detail-row"><span class="detail-label">Status:</span><span style="color:var(--main); font-family: 'Orbitron';">ONLINE</span></div>
+            <div style="margin-top: 30px; text-align: center; opacity: 0.3; font-size: 10px; text-transform: uppercase;">ESC LUB KLIKNIJ OBOK, ABY ZAMKNĄĆ</div>
         </div>
     </div>
 
@@ -139,7 +130,7 @@
         </div>
         <div class="custom-input-box" id="c-box">
             <input type="text" id="c-input" class="small-input" placeholder="KOD SERWERA">
-            <button class="btn" onclick="applyCustom()" style="border: 1px solid var(--main);">OK</button>
+            <button class="btn" onclick="applyCustom()" style="border: 1px solid var(--main); padding: 5px 15px;">OK</button>
         </div>
     </div>
     
@@ -150,9 +141,11 @@
         <div class="color-selector" id="t-prev"><input type="color" id="colorPicker"></div>
     </div>
 
-    <input type="text" id="sInput" class="search-input" placeholder="WYSZUKAJ CWELA..." oninput="draw()">
-    <div style="margin-top: 20px; font-weight: bold; color: var(--main); letter-spacing: 5px;">ONLINE: <span id="oCount">0</span></div>
-    
+    <div class="search-wrap">
+        <input type="text" id="sInput" class="search-input" placeholder="SZUKAJ CWELA..." oninput="draw()">
+        <div class="status-bar">LIVE ONLINE: <span id="oCount">0</span></div>
+    </div>
+
     <div id="results"></div>
 
     <script>
@@ -177,7 +170,8 @@
         document.getElementById('colorPicker').addEventListener('input', (e) => applyColor(e.target.value));
 
         function openModal(p) {
-            const isG = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
+            const low = p.name.toLowerCase();
+            const isG = low.includes('przmx') || low.includes('kejcpi');
             const label = document.getElementById('modal-label');
             label.innerText = isG ? "NICK GOAT'A" : "NICK CWELA";
             label.className = `label ${isG ? 'label-goat' : 'label-cwela'}`;
@@ -234,7 +228,7 @@
                 document.getElementById('oCount').innerText = players.length;
                 updateSessionInfo(players);
                 draw();
-            } catch (err) { document.getElementById('oCount').innerText = "OFFLINE"; }
+            } catch (err) { document.getElementById('oCount').innerText = "BŁĄD"; }
         }
 
         function toggleFav(e, n) {
@@ -257,7 +251,8 @@
             let list = players.filter(p => p.name.toLowerCase().includes(s) || p.id.toString().includes(s));
             if (filter === 'fav') list = list.filter(p => favs.includes(p.name));
             res.innerHTML = list.map(p => {
-                const isG = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
+                const low = p.name.toLowerCase();
+                const isG = low.includes('przmx') || low.includes('kejcpi');
                 return `
                 <div class="player-card" onclick='openModal(${JSON.stringify(p)})'>
                     <div class="label ${isG ? 'label-goat' : 'label-cwela'}">${isG ? "NICK GOAT'A" : "NICK CWELA"}</div>
