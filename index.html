@@ -55,7 +55,7 @@
         .header span { color: var(--main); transition: 0.3s; }
 
         .server-selector {
-            display: flex; gap: 10px; margin-top: 20px;
+            display: flex; gap: 10px; margin-top: 20px; justify-content: center;
         }
 
         .nav-bar { 
@@ -122,8 +122,8 @@
     <div class="header">
         <h1 id="main-title">GRANDRP <span>TRACKER</span></h1>
         <div class="server-selector">
-            <button class="btn btn-server active" id="srv-grand" onclick="switchServer('8rml8v', 'GRANDRP')">GRANDRP</button>
-            <button class="btn btn-server" id="srv-better" onclick="switchServer('dyrx5y', 'BETTERSIDE')">BETTERSIDE</button>
+            <button class="btn btn-server" id="srv-8rml8v" onclick="switchServer('8rml8v', 'GRANDRP')">GRANDRP</button>
+            <button class="btn btn-server" id="srv-dyrx5y" onclick="switchServer('dyrx5y', 'BETTERSIDE')">BETTERSIDE</button>
         </div>
     </div>
     
@@ -131,7 +131,7 @@
         <button class="btn active" id="f-all" onclick="updF('all')">WSZYSCY</button>
         <button class="btn" id="f-fav" onclick="updF('fav')">ULUBIONE</button>
         <button class="btn" onclick="fetchS()">ODŚWIEŻ ↻</button>
-        <div class="color-selector" id="t-prev" style="background: #0088ff;"><input type="color" id="colorPicker" value="#0088ff"></div>
+        <div class="color-selector" id="t-prev"><input type="color" id="colorPicker"></div>
     </div>
 
     <div class="search-wrap">
@@ -142,29 +142,37 @@
     <div id="results"></div>
 
     <script>
-        let currentServerCode = '8rml8v';
-        let currentServerName = 'GRANDRP';
-        const proxy = "https://corsproxy.io/?";
+        // --- PERSISTENCE LOGIC ---
+        let currentServerCode = localStorage.getItem('last_srv_code') || '8rml8v';
+        let currentServerName = localStorage.getItem('last_srv_name') || 'GRANDRP';
+        let savedColor = localStorage.getItem('user_theme_color') || '#0088ff';
         
+        const proxy = "https://corsproxy.io/?";
         let players = [];
         let favs = JSON.parse(localStorage.getItem('g_tracker_v6')) || [];
         let filter = 'all';
 
+        // Apply saved color on load
+        function applyColor(color) {
+            document.documentElement.style.setProperty('--main', color);
+            document.getElementById('t-prev').style.background = color;
+            document.getElementById('colorPicker').value = color;
+            document.getElementById('aurora-bg').style.background = `radial-gradient(circle at 50% 50%, ${color}, transparent 40%)`;
+            localStorage.setItem('user_theme_color', color);
+        }
+
         const cp = document.getElementById('colorPicker');
-        cp.addEventListener('input', (e) => {
-            const v = e.target.value;
-            document.documentElement.style.setProperty('--main', v);
-            document.getElementById('t-prev').style.background = v;
-            document.getElementById('aurora-bg').style.background = `radial-gradient(circle at 50% 50%, ${v}, transparent 40%)`;
-        });
+        cp.addEventListener('input', (e) => applyColor(e.target.value));
 
         function switchServer(code, name) {
             currentServerCode = code;
             currentServerName = name;
+            localStorage.setItem('last_srv_code', code);
+            localStorage.setItem('last_srv_name', name);
             
             document.getElementById('main-title').innerHTML = `${name} <span>TRACKER</span>`;
-            document.getElementById('srv-grand').classList.toggle('active', code === '8rml8v');
-            document.getElementById('srv-better').classList.toggle('active', code === 'dyrx5y');
+            document.querySelectorAll('.btn-server').forEach(b => b.classList.remove('active'));
+            document.getElementById(`srv-${code}`).classList.add('active');
             
             fetchS();
         }
@@ -213,7 +221,9 @@
             res.innerHTML = html;
         }
 
-        fetchS();
+        // Initialize state
+        applyColor(savedColor);
+        switchServer(currentServerCode, currentServerName);
         setInterval(fetchS, 30000);
     </script>
 </body>
