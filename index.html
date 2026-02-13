@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Dashboard</title>
+    <title>PRZMX | Data Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -23,7 +23,10 @@
             min-height: 100vh;
         }
         
-        .glow-title { text-shadow: 0 0 30px var(--accent-color); }
+        .glow-title { 
+            text-shadow: 0 0 40px var(--accent-glow);
+            letter-spacing: -0.05em;
+        }
 
         .neo-card {
             background: rgba(13, 15, 18, 0.9);
@@ -34,7 +37,8 @@
 
         .neo-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px -5px var(--accent-glow);
+            box-shadow: 0 10px 25px -5px var(--accent-glow);
+            background: rgba(20, 22, 26, 1);
         }
 
         .server-select {
@@ -46,15 +50,22 @@
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            cursor: pointer;
             outline: none;
+            transition: 0.3s;
         }
 
         .search-container {
             background: #0d0f12;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-left: 5px solid var(--accent-color);
+            border-bottom: 4px solid var(--accent-color);
+        }
+
+        .author-tag {
+            letter-spacing: 0.5em;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
         input[type="color"] {
@@ -69,15 +80,17 @@
         input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: 1px solid white; }
     </style>
 </head>
-<body class="py-10 px-6">
+<body class="py-16 px-6">
 
-    <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-16 text-center md:text-left">
-            <h1 class="text-5xl font-extrabold tracking-tighter italic uppercase glow-title leading-none">
-                GRANDRP <span style="color: var(--accent-color)">FINDER</span>
+    <div class="max-w-7xl mx-auto flex flex-col items-center">
+        
+        <div class="text-center mb-12">
+            <p class="author-tag mb-4">Developed by PRZMX</p>
+            <h1 class="text-6xl md:text-7xl font-black italic uppercase glow-title leading-none">
+                DATA <span style="color: var(--accent-color)">CENTER</span>
             </h1>
-
-            <div class="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/5">
+            
+            <div class="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/5 mt-8 inline-flex">
                 <select id="srvSelector" onchange="handleServerChange(this.value)" class="server-select">
                     <option value="8rml8v">GrandRP</option>
                     <option value="dyrx5y">BetterSide RP</option>
@@ -90,20 +103,20 @@
             </div>
         </div>
 
-        <div class="max-w-3xl mx-auto mb-16 text-center">
-            <div class="search-container rounded-xl overflow-hidden shadow-2xl mb-6">
+        <div class="max-w-3xl w-full mb-16 text-center">
+            <div class="search-container rounded-2xl overflow-hidden shadow-2xl mb-8">
                 <input type="text" id="search" placeholder="SZUKAJ CWELA..." 
-                    class="w-full bg-transparent py-6 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter text-center">
+                    class="w-full bg-transparent py-8 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter text-center">
             </div>
             
-            <div class="inline-flex items-center gap-4 px-8 py-2 rounded-full bg-white/5 border border-white/5">
-                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">WYKRYTYCH CWELI:</span>
-                <span id="count" class="text-2xl italic font-black" style="color: var(--accent-color)">0</span>
+            <div class="inline-flex items-center gap-6 px-10 py-3 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+                <span class="text-[11px] font-black uppercase tracking-[0.5em] text-white/40">WYKRYTO JEDNOSTEK:</span>
+                <span id="count" class="text-3xl italic font-black" style="color: var(--accent-color)">0</span>
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 text-left">
-            </div>
+        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 w-full text-left">
+        </div>
     </div>
 
     <script>
@@ -114,7 +127,7 @@
             const root = document.documentElement;
             root.style.setProperty('--accent-color', color);
             root.style.setProperty('--accent-glow', color + '44');
-            localStorage.setItem('grand_theme_v3', color);
+            localStorage.setItem('przmx_theme', color);
         }
 
         async function fetchData() {
@@ -128,7 +141,7 @@
                     render(allData);
                 }
             } catch (e) {
-                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase tracking-widest">Błąd połączenia</div>';
+                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase tracking-widest opacity-50">Błąd połączenia</div>';
             }
         }
 
@@ -142,12 +155,12 @@
             }
 
             container.innerHTML = list.map(p => `
-                <div class="neo-card p-5 rounded-xl relative group">
-                    <div class="flex flex-col">
-                        <span class="text-[7px] font-black text-white/20 uppercase tracking-widest mb-1 text-left">ID CWELA</span>
-                        <span class="text-3xl font-black text-white mb-3 leading-none italic text-left">${p.id}</span>
-                        <div class="h-[2px] w-4 transition-all group-hover:w-full" style="background: var(--accent-color)"></div>
-                        <span class="text-[9px] font-bold text-slate-400 uppercase truncate mt-3 text-left">${p.name}</span>
+                <div class="neo-card p-6 rounded-2xl relative group overflow-hidden">
+                    <div class="flex flex-col relative z-10">
+                        <span class="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">ID CWELA</span>
+                        <span class="text-4xl font-black text-white mb-4 leading-none italic">${p.id}</span>
+                        <div class="h-[3px] w-6 mb-4 transition-all group-hover:w-full" style="background: var(--accent-color)"></div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase truncate">${p.name}</span>
                     </div>
                 </div>
             `).join('');
@@ -155,7 +168,7 @@
 
         function handleServerChange(val) {
             if (val === 'custom') {
-                const newId = prompt("Wprowadź nowy Join ID serwera:");
+                const newId = prompt("Wprowadź Join ID:");
                 if (newId && newId.trim().length > 3) {
                     currentSrv = newId.trim().toLowerCase();
                     const select = document.getElementById('srvSelector');
@@ -164,8 +177,6 @@
                     opt.innerHTML = `WŁASNY: ${currentSrv.toUpperCase()}`;
                     select.add(opt, select.options[select.options.length - 1]);
                     select.value = currentSrv;
-                } else {
-                    document.getElementById('srvSelector').value = currentSrv;
                 }
             } else {
                 currentSrv = val;
@@ -173,7 +184,7 @@
             fetchData();
         }
 
-        const saved = localStorage.getItem('grand_theme_v3');
+        const saved = localStorage.getItem('przmx_theme');
         if (saved) {
             applyTheme(saved);
             document.getElementById('picker').value = saved;
