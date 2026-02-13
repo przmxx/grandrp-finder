@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRZMX | Data Center</title>
+    <title>Player Tracker | by PRZMX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -25,7 +25,17 @@
         
         .glow-title { 
             text-shadow: 0 0 40px var(--accent-glow);
-            letter-spacing: -0.05em;
+            letter-spacing: -0.02em;
+        }
+
+        .author-subtitle {
+            letter-spacing: 0.8em;
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 12px;
+            color: var(--accent-color);
+            opacity: 0.8;
+            margin-top: -10px;
         }
 
         .neo-card {
@@ -37,7 +47,7 @@
 
         .neo-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px var(--accent-glow);
+            box-shadow: 0 15px 30px -10px var(--accent-glow);
             background: rgba(20, 22, 26, 1);
         }
 
@@ -51,21 +61,12 @@
             font-weight: 800;
             text-transform: uppercase;
             outline: none;
-            transition: 0.3s;
         }
 
         .search-container {
             background: #0d0f12;
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-bottom: 4px solid var(--accent-color);
-        }
-
-        .author-tag {
-            letter-spacing: 0.5em;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
         }
 
         input[type="color"] {
@@ -84,13 +85,13 @@
 
     <div class="max-w-7xl mx-auto flex flex-col items-center">
         
-        <div class="text-center mb-12">
-            <p class="author-tag mb-4">Developed by PRZMX</p>
-            <h1 class="text-6xl md:text-7xl font-black italic uppercase glow-title leading-none">
-                DATA <span style="color: var(--accent-color)">CENTER</span>
+        <div class="text-center mb-12 flex flex-col items-center">
+            <h1 class="text-6xl md:text-8xl font-black italic uppercase glow-title leading-tight">
+                PLAYER <span style="color: var(--accent-color)">TRACKER</span>
             </h1>
+            <p class="author-subtitle">by PRZMX</p>
             
-            <div class="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/5 mt-8 inline-flex">
+            <div class="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/5 mt-10 inline-flex">
                 <select id="srvSelector" onchange="handleServerChange(this.value)" class="server-select">
                     <option value="8rml8v">GrandRP</option>
                     <option value="dyrx5y">BetterSide RP</option>
@@ -110,13 +111,13 @@
             </div>
             
             <div class="inline-flex items-center gap-6 px-10 py-3 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
-                <span class="text-[11px] font-black uppercase tracking-[0.5em] text-white/40">WYKRYTO JEDNOSTEK:</span>
+                <span class="text-[11px] font-black uppercase tracking-[0.5em] text-white/30">ZAREJESTROWANO:</span>
                 <span id="count" class="text-3xl italic font-black" style="color: var(--accent-color)">0</span>
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 w-full text-left">
-        </div>
+        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 w-full">
+            </div>
     </div>
 
     <script>
@@ -127,7 +128,7 @@
             const root = document.documentElement;
             root.style.setProperty('--accent-color', color);
             root.style.setProperty('--accent-glow', color + '44');
-            localStorage.setItem('przmx_theme', color);
+            localStorage.setItem('przmx_tracker_theme', color);
         }
 
         async function fetchData() {
@@ -141,7 +142,7 @@
                     render(allData);
                 }
             } catch (e) {
-                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase tracking-widest opacity-50">Błąd połączenia</div>';
+                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase tracking-widest opacity-50">BŁĄD POŁĄCZENIA Z SERWEREM</div>';
             }
         }
 
@@ -150,7 +151,7 @@
             const container = document.getElementById('player-list');
             
             if (list.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-32 opacity-10 uppercase font-black italic tracking-[1em]">Brak Sygnału</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-32 opacity-10 uppercase font-black italic tracking-[1em]">BRAK SYGNAŁU</div>';
                 return;
             }
 
@@ -184,7 +185,7 @@
             fetchData();
         }
 
-        const saved = localStorage.getItem('przmx_theme');
+        const saved = localStorage.getItem('przmx_tracker_theme');
         if (saved) {
             applyTheme(saved);
             document.getElementById('picker').value = saved;
