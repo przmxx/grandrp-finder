@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Multi-Server Tracker</title>
+    <title>Elite Multi-Server Tracker - Session Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -21,7 +21,7 @@
 
         .visual-effects {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            overflow: hidden; background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.1), transparent 50%);
+            background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.1), transparent 50%);
         }
 
         .aurora {
@@ -30,114 +30,77 @@
             opacity: 0.05; filter: blur(100px); animation: drift 20s infinite linear;
         }
 
-        @keyframes drift {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes drift { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .bg-grid { 
             position: absolute; top: 0; width: 100%; height: 100%; 
-            background: 
-                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), 
-                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); 
-            background-size: 60px 60px; 
-            transform: perspective(600px) rotateX(45deg); 
-            transform-origin: center top; 
-            mask-image: linear-gradient(to bottom, black, transparent);
+            background: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), 
+                        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); 
+            background-size: 60px 60px; transform: perspective(600px) rotateX(45deg); 
+            transform-origin: center top; mask-image: linear-gradient(to bottom, black, transparent);
         }
 
         .header { margin-top: 50px; text-align: center; }
-        .header h1 { 
-            font-family: 'Orbitron', sans-serif; font-size: clamp(30px, 6vw, 55px); 
-            margin: 0; text-shadow: 0 0 30px var(--main); font-style: italic; 
-            letter-spacing: -2px; text-transform: uppercase;
-        }
-        .header span { color: var(--main); transition: 0.3s; }
+        .header h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(30px, 6vw, 55px); margin: 0; text-shadow: 0 0 30px var(--main); font-style: italic; text-transform: uppercase; }
+        .header span { color: var(--main); }
 
-        .server-selector {
-            display: flex; gap: 10px; margin-top: 25px; justify-content: center; flex-wrap: wrap;
-        }
+        .server-selector { display: flex; gap: 10px; margin-top: 25px; justify-content: center; flex-wrap: wrap; }
 
         .custom-input-box {
-            margin-top: 20px; display: flex; gap: 10px; 
-            max-height: 0; opacity: 0; overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255,255,255,0.02); padding: 0 20px; border-radius: 15px;
+            margin-top: 20px; display: flex; gap: 10px; max-height: 0; opacity: 0; overflow: hidden;
+            transition: all 0.4s ease; background: rgba(255,255,255,0.02); border-radius: 15px;
         }
-        .custom-input-box.visible { 
-            max-height: 100px; opacity: 1; padding: 15px 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        .custom-input-box.visible { max-height: 100px; opacity: 1; padding: 15px 20px; border: 1px solid rgba(255,255,255,0.05); }
 
-        .small-input {
-            background: rgba(0,0,0,0.5); border: 1px solid var(--main);
-            color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron';
-            text-align: center; font-size: 14px; outline: none;
-        }
+        .small-input { background: rgba(0,0,0,0.5); border: 1px solid var(--main); color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron'; text-align: center; font-size: 14px; outline: none; }
 
-        .nav-bar { 
-            display: flex; align-items: center; gap: 15px; margin: 30px 0; 
-            background: var(--glass); padding: 12px 25px; border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .nav-bar { display: flex; align-items: center; gap: 15px; margin: 30px 0; background: var(--glass); padding: 12px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        .btn { 
-            background: transparent; border: 1px solid transparent; color: #666; 
-            padding: 10px 22px; border-radius: 10px; cursor: pointer; 
-            font-weight: 700; text-transform: uppercase; font-size: 12px; transition: 0.3s;
-        }
+        .btn { background: transparent; border: 1px solid transparent; color: #666; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: 700; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
         .btn.active { background: rgba(255,255,255,0.05); color: #fff; border-color: var(--main); box-shadow: 0 0 20px var(--main); }
         .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; text-shadow: 0 0 10px var(--main); }
 
-        .color-selector { 
-            width: 38px; height: 38px; border-radius: 12px; border: 2px solid #fff; 
-            position: relative; overflow: hidden; cursor: pointer; 
-        }
-        #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
+        .search-input { width: 90%; max-width: 750px; background: transparent; border: none; border-bottom: 2px solid var(--main); padding: 15px; color: #fff; font-size: 32px; text-align: center; outline: none; font-family: 'Orbitron', sans-serif; letter-spacing: 6px; }
 
-        .search-wrap { width: 90%; max-width: 750px; text-align: center; }
-        .search-input { 
-            width: 100%; background: transparent; border: none; 
-            border-bottom: 2px solid var(--main); padding: 15px; 
-            color: #fff; font-size: 32px; text-align: center; outline: none; 
-            font-family: 'Orbitron', sans-serif; letter-spacing: 6px; transition: 0.4s;
-        }
+        .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 4px; font-size: 14px; }
 
-        .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 4px; font-size: 14px; text-shadow: 0 0 10px var(--main); }
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 25px; width: 94%; max-width: 1400px; padding-bottom: 80px; }
 
-        #results { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); 
-            gap: 25px; width: 94%; max-width: 1400px; padding-bottom: 80px; 
-        }
-
+        /* --- KARTA GRACZA --- */
         .player-card { 
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); 
             border: 1px solid rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; 
-            position: relative; transition: all 0.4s; backdrop-filter: blur(15px);
-            animation: fadeIn 0.5s ease forwards;
+            position: relative; transition: all 0.3s; backdrop-filter: blur(15px); cursor: pointer;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .player-card:hover { transform: translateY(-8px); border-color: var(--main); box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
+        .player-card:hover { transform: translateY(-5px); border-color: var(--main); background: rgba(255,255,255,0.05); }
 
-        .label { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; color: #000; }
+        .label { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; color: #000; text-transform: uppercase; }
         .label-cwela { background: var(--main); }
         .label-goat { background: var(--goat-color); box-shadow: 0 0 15px var(--goat-color); }
         
-        .name { font-size: 22px; font-weight: 700; word-break: break-all; }
-        .id-container { position: absolute; bottom: 25px; right: 25px; text-align: right; }
-        .id-value { color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; opacity: 0.8; }
+        .name { font-size: 22px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; display: block; }
+        .id-val { position: absolute; bottom: 25px; right: 25px; color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; opacity: 0.8; }
         
-        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); transition: 0.3s; }
+        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); z-index: 10; }
         .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
+
+        /* --- SZCZEGÓŁY PO KLIKNIĘCIU --- */
+        .details {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease, margin-top 0.4s ease;
+            font-size: 13px; color: #aaa; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .player-card.open .details { max-height: 200px; margin-top: 15px; padding-top: 15px; }
+        
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .detail-label { color: var(--main); font-weight: bold; text-transform: uppercase; font-size: 10px; }
+        .id-history { color: #fff; font-family: 'Orbitron'; font-size: 11px; }
+
+        .color-selector { width: 38px; height: 38px; border-radius: 12px; border: 2px solid #fff; position: relative; overflow: hidden; cursor: pointer; }
+        #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="visual-effects">
-        <div class="aurora" id="aurora-bg"></div>
-        <div class="bg-grid"></div>
-    </div>
+    <div class="visual-effects"><div class="aurora" id="aurora-bg"></div><div class="bg-grid"></div></div>
     
     <div class="header">
         <h1 id="main-title">TRACKER</h1>
@@ -147,7 +110,7 @@
             <button class="btn btn-server" id="srv-custom" onclick="toggleCustomPanel()">WŁASNY</button>
         </div>
         <div class="custom-input-box" id="c-box">
-            <input type="text" id="c-input" class="small-input" placeholder="KOD (np. abc123)">
+            <input type="text" id="c-input" class="small-input" placeholder="KOD">
             <button class="btn" onclick="applyCustom()" style="border: 1px solid var(--main); padding: 5px 15px;">OK</button>
         </div>
     </div>
@@ -159,11 +122,8 @@
         <div class="color-selector" id="t-prev"><input type="color" id="colorPicker"></div>
     </div>
 
-    <div class="search-wrap">
-        <input type="text" id="sInput" class="search-input" placeholder="WYSZUKAJ..." oninput="draw()">
-        <div class="status-bar">ONLINE: <span id="oCount">0</span></div>
-    </div>
-
+    <input type="text" id="sInput" class="search-input" placeholder="WYSZUKAJ..." oninput="draw()">
+    <div class="status-bar">ONLINE: <span id="oCount">0</span></div>
     <div id="results"></div>
 
     <script>
@@ -177,6 +137,43 @@
         let favs = JSON.parse(localStorage.getItem('g_tracker_v6')) || [];
         let filter = 'all';
 
+        // --- HISTORIA I SESJA ---
+        // Format: { "Nick": { firstSeen: timestamp, ids: [id1, id2], lastSeen: timestamp } }
+        let sessionData = JSON.parse(localStorage.getItem('session_tracker_v1')) || {};
+
+        function cleanOldSessions() {
+            const now = Date.now();
+            for (let nick in sessionData) {
+                // Usuń wpisy starsze niż 24h od ostatniego pojawienia się
+                if (now - sessionData[nick].lastSeen > 86400000) delete sessionData[nick];
+            }
+            localStorage.setItem('session_tracker_v1', JSON.stringify(sessionData));
+        }
+
+        function updateSessionInfo(currentPlayers) {
+            const now = Date.now();
+            currentPlayers.forEach(p => {
+                if (!sessionData[p.name]) {
+                    sessionData[p.name] = { firstSeen: now, ids: [p.id], lastSeen: now };
+                } else {
+                    sessionData[p.name].lastSeen = now;
+                    if (!sessionData[p.name].ids.includes(p.id)) {
+                        sessionData[p.name].ids.push(p.id);
+                    }
+                }
+            });
+            localStorage.setItem('session_tracker_v1', JSON.stringify(sessionData));
+        }
+
+        function getSessionTime(nick) {
+            if (!sessionData[nick]) return "0m";
+            const diffMs = Date.now() - sessionData[nick].firstSeen;
+            const mins = Math.floor(diffMs / 60000);
+            const hrs = Math.floor(mins / 60);
+            return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
+        }
+
+        // --- UI LOGIC ---
         function applyColor(color) {
             document.documentElement.style.setProperty('--main', color);
             document.getElementById('t-prev').style.background = color;
@@ -185,51 +182,24 @@
             localStorage.setItem('user_theme_color', color);
         }
 
-        const cp = document.getElementById('colorPicker');
-        cp.addEventListener('input', (e) => applyColor(e.target.value));
+        document.getElementById('colorPicker').addEventListener('input', (e) => applyColor(e.target.value));
 
-        function toggleCustomPanel() {
-            const box = document.getElementById('c-box');
-            box.classList.toggle('visible');
-            if(customCodeStored) document.getElementById('c-input').value = customCodeStored;
-        }
-
-        function selectServer(code, name) {
-            document.getElementById('c-box').classList.remove('visible');
-            switchServer(code, name);
-        }
-
+        function toggleCustomPanel() { document.getElementById('c-box').classList.toggle('visible'); }
+        function selectServer(code, name) { document.getElementById('c-box').classList.remove('visible'); switchServer(code, name); }
         function applyCustom() {
             const val = document.getElementById('c-input').value.trim().toLowerCase();
-            if(val) {
-                customCodeStored = val;
-                localStorage.setItem('user_custom_code', val);
-                switchServer(val, 'CUSTOM');
-                document.getElementById('c-box').classList.remove('visible');
-            }
+            if(val) { localStorage.setItem('user_custom_code', val); switchServer(val, 'CUSTOM'); document.getElementById('c-box').classList.remove('visible'); }
         }
 
         function switchServer(code, name) {
             currentServerCode = code;
             currentServerName = (name === 'CUSTOM') ? `SERVER [${code}]` : name;
-            
             localStorage.setItem('last_srv_code', code);
             localStorage.setItem('last_srv_name', currentServerName);
-            
             document.getElementById('main-title').innerHTML = `${currentServerName} <span>TRACKER</span>`;
-            
-            // --- POPRAWKA PODŚWIETLANIA ---
             document.querySelectorAll('.btn-server').forEach(b => b.classList.remove('active'));
-            
-            // Sprawdź czy to jeden ze stałych serwerów
-            const staticCodes = ['8rml8v', 'dyrx5y'];
-            if (staticCodes.includes(code)) {
-                document.getElementById(`srv-${code}`).classList.add('active');
-            } else {
-                // Jeśli kod nie jest na liście stałych, podświetl WŁASNY
-                document.getElementById('srv-custom').classList.add('active');
-            }
-            
+            const sBtn = document.getElementById(`srv-${code}`);
+            if(sBtn) sBtn.classList.add('active'); else document.getElementById('srv-custom').classList.add('active');
             fetchS();
         }
 
@@ -239,14 +209,16 @@
                 const d = await res.json();
                 players = d.Data.players || [];
                 document.getElementById('oCount').innerText = players.length;
+                updateSessionInfo(players);
                 draw();
             } catch (err) { 
-                document.getElementById('oCount').innerText = "BŁĄD / WYŁĄCZONY";
+                document.getElementById('oCount').innerText = "BŁĄD";
                 document.getElementById('results').innerHTML = '';
             }
         }
 
-        function toggleFav(n) {
+        function toggleFav(e, n) {
+            e.stopPropagation();
             favs.includes(n) ? favs = favs.filter(x => x !== n) : favs.push(n);
             localStorage.setItem('g_tracker_v6', JSON.stringify(favs));
             draw();
@@ -265,29 +237,37 @@
             let list = players.filter(p => p.name.toLowerCase().includes(s) || p.id.toString().includes(s));
             if (filter === 'fav') list = list.filter(p => favs.includes(p.name));
 
-            let html = '';
-            list.forEach(p => {
-                const low = p.name.toLowerCase();
-                const isG = low.includes('przmx') || low.includes('kejcpi');
-                html += `
-                <div class="player-card">
+            res.innerHTML = list.map(p => {
+                const isG = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
+                const sessionTime = getSessionTime(p.name);
+                const historyIds = sessionData[p.name]?.ids.join(', ') || p.id;
+
+                return `
+                <div class="player-card" onclick="this.classList.toggle('open')">
                     <div class="label ${isG ? 'label-goat' : 'label-cwela'}">${isG ? "NICK GOAT'A" : "NICK CWELA"}</div>
-                    <div class="name">${p.name}</div>
-                    <span class="star-fav ${favs.includes(p.name) ? 'is-active' : ''}" onclick="toggleFav('${p.name}')">★</span>
-                    <div class="id-container"><span class="id-value">#${p.id}</span></div>
+                    <div class="name" title="${p.name}">${p.name}</div>
+                    <span class="star-fav ${favs.includes(p.name) ? 'is-active' : ''}" onclick="toggleFav(event, '${p.name}')">★</span>
+                    <div class="id-val">#${p.id}</div>
+                    
+                    <div class="details">
+                        <div class="detail-row">
+                            <span class="detail-label">Czas sesji:</span>
+                            <span>${sessionTime}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">ID z 24h:</span>
+                            <span class="id-history">${historyIds}</span>
+                        </div>
+                        <div style="font-size:9px; opacity:0.5; margin-top:10px; text-align:center;">KLIKNIJ, ABY ZAMKNĄĆ</div>
+                    </div>
                 </div>`;
-            });
-            res.innerHTML = html || '<div style="opacity:0.2; width:100%; text-align:center; padding-top:50px;">BRAK WYNIKÓW</div>';
+            }).join('');
         }
 
+        // Init
+        cleanOldSessions();
         applyColor(savedColor);
-        // Inicjalizacja podświetlenia przy starcie
-        const staticCodes = ['8rml8v', 'dyrx5y'];
-        if (staticCodes.includes(currentServerCode)) {
-            switchServer(currentServerCode, currentServerName);
-        } else {
-            switchServer(currentServerCode, 'CUSTOM');
-        }
+        switchServer(currentServerCode, currentServerName);
         setInterval(fetchS, 35000);
     </script>
 </body>
