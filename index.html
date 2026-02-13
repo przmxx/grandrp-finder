@@ -3,145 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Tracker - Blue Edition</title>
+    <title>GrandRP Tracker - Elite Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --main-color: #0088ff; /* Startowy niebieski klimat */
-            --dark-bg: #030303;
-            --glass: rgba(255, 255, 255, 0.03);
+            --main-color: #0088ff;
+            --dark-bg: #020202;
+            --card-bg: rgba(255, 255, 255, 0.03);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--dark-bg); color: white;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
             overflow-x: hidden; display: flex; flex-direction: column; align-items: center;
         }
 
+        /* Siatka tła */
         .background-grid {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-            background-size: 40px 40px;
-            transform: perspective(1000px) rotateX(60deg);
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(800px) rotateX(60deg);
             transform-origin: center top; z-index: -1;
             mask-image: linear-gradient(to bottom, transparent, black);
         }
 
-        .color-picker-container {
-            position: absolute; top: 20px; right: 20px;
-            background: var(--glass); padding: 8px 15px;
-            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; gap: 10px; font-size: 11px;
-            backdrop-filter: blur(10px); z-index: 100;
-        }
-        #colorPicker { cursor: pointer; border: none; background: none; width: 25px; height: 25px; }
-
-        .header { margin-top: 60px; text-align: center; }
+        .header { margin-top: 50px; text-align: center; }
         .header h1 {
-            font-size: 58px; font-style: italic; font-weight: 900; margin: 0;
-            color: #fff; text-shadow: 0 0 30px var(--main-color);
-            letter-spacing: -1px; text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(30px, 8vw, 60px); font-style: italic; font-weight: 900; margin: 0;
+            color: #fff; text-shadow: 0 0 25px var(--main-color);
+            letter-spacing: -2px; text-transform: uppercase;
         }
-        .header span { color: var(--main-color); transition: 0.3s; }
+        .header span { color: var(--main-color); }
 
-        .top-nav { display: flex; gap: 10px; margin-top: 25px; }
+        /* Nawigacja z Pickerem */
+        .controls-row {
+            display: flex; align-items: center; gap: 15px; margin-top: 30px;
+            background: rgba(255,255,255,0.02); padding: 8px; border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+        }
+
         .nav-btn {
-            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #888; padding: 12px 30px; border-radius: 8px;
-            text-transform: uppercase; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s;
+            background: transparent; border: 1px solid transparent;
+            color: #666; padding: 10px 25px; border-radius: 10px;
+            text-transform: uppercase; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s;
         }
-        .nav-btn.active { border-color: var(--main-color); color: white; box-shadow: 0 0 20px var(--main-color); background: rgba(0, 136, 255, 0.1); }
+        .nav-btn.active { 
+            background: rgba(255,255,255,0.05); color: #fff; 
+            border-color: var(--main-color); box-shadow: 0 0 15px var(--main-color);
+        }
 
-        .search-container { margin-top: 50px; width: 100%; max-width: 650px; text-align: center; }
-        .search-box {
-            width: 100%; background: transparent; border: none;
-            border-bottom: 2px solid var(--main-color); padding: 15px;
-            color: white; font-size: 32px; text-align: center; outline: none;
-            text-transform: uppercase; letter-spacing: 4px; transition: 0.3s;
-            font-weight: 200;
+        .color-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
+            background: var(--main-color); border: 2px solid rgba(255,255,255,0.2);
+            position: relative; overflow: hidden; transition: 0.3s;
         }
+        .color-wrapper:hover { transform: scale(1.1); }
+        #colorPicker {
+            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            cursor: pointer; border: none;
+        }
+
+        .search-container { margin-top: 40px; width: 100%; max-width: 700px; text-align: center; position: relative; }
+        .search-box {
+            width: 90%; background: transparent; border: none;
+            border-bottom: 2px solid var(--main-color); padding: 15px;
+            color: white; font-size: 36px; text-align: center; outline: none;
+            text-transform: uppercase; letter-spacing: 6px; font-family: 'Orbitron', sans-serif;
+            transition: 0.3s;
+        }
+        .search-box:focus { text-shadow: 0 0 20px var(--main-color); }
 
         .online-status {
-            margin-top: 30px; border: 1px solid var(--main-color);
-            border-radius: 50px; padding: 8px 25px; color: var(--main-color);
-            font-size: 12px; font-weight: 900; letter-spacing: 2px;
-            box-shadow: 0 0 15px rgba(0, 136, 255, 0.2);
-            animation: pulse 2s infinite;
+            margin-top: 25px; color: var(--main-color); font-weight: 700;
+            letter-spacing: 3px; font-size: 14px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 10px;
         }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .dot { width: 8px; height: 8px; background: var(--main-color); border-radius: 50%; box-shadow: 0 0 10px var(--main-color); animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         #results {
             margin-top: 40px; display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px; width: 90%; max-width: 1200px; padding-bottom: 100px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px; width: 90%; max-width: 1400px; padding-bottom: 80px;
         }
 
-        /* Lepsze kafelki */
+        /* Kafelki EXTREME */
         .player-item {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            padding: 25px; border-radius: 15px;
-            display: flex; flex-direction: column; position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
+            padding: 30px; position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px); overflow: hidden;
         }
-        .player-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--main-color);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 136, 255, 0.1);
+        .player-item::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top left, var(--main-color), transparent 70%);
+            opacity: 0; transition: 0.4s; z-index: -1;
         }
+        .player-item:hover { transform: translateY(-10px); border-color: var(--main-color); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .player-item:hover::before { opacity: 0.1; }
 
-        .label-cwela {
-            font-size: 10px; color: #fff; font-weight: 900;
-            background: var(--main-color); display: inline-block;
-            padding: 2px 8px; border-radius: 4px; margin-bottom: 12px;
-            align-self: flex-start; text-transform: uppercase;
+        .cwela-tag {
+            background: var(--main-color); color: #000; font-weight: 900;
+            font-size: 10px; padding: 3px 12px; border-radius: 5px;
+            display: inline-block; margin-bottom: 15px; letter-spacing: 1px;
         }
-        .player-name { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        
-        .player-id-box {
-            position: absolute; bottom: 20px; right: 25px;
-            text-align: right;
-        }
-        .id-label { font-size: 9px; color: #555; display: block; text-transform: uppercase; }
-        .id-value { color: var(--main-color); font-weight: 900; font-size: 18px; }
+        .player-name { font-size: 24px; font-weight: 700; letter-spacing: 1px; color: #fff; }
 
-        .fav-star {
-            position: absolute; top: 20px; right: 20px;
-            cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05);
-            transition: 0.2s;
+        .id-badge {
+            position: absolute; bottom: 30px; right: 30px; text-align: right;
         }
-        .fav-star.is-fav { color: var(--main-color); text-shadow: 0 0 15px var(--main-color); opacity: 1; }
-        .fav-star:hover { transform: scale(1.2); }
+        .id-label { font-size: 10px; color: #444; text-transform: uppercase; display: block; font-weight: 900; }
+        .id-val { font-family: 'Orbitron', sans-serif; color: var(--main-color); font-size: 22px; font-weight: 900; }
+
+        .star {
+            position: absolute; top: 30px; right: 30px; cursor: pointer;
+            font-size: 24px; color: rgba(255,255,255,0.05); transition: 0.2s;
+        }
+        .star.is-fav { color: var(--main-color); text-shadow: 0 0 15px var(--main-color); }
     </style>
 </head>
 <body>
 
     <div class="background-grid"></div>
 
-    <div class="color-picker-container">
-        <span>MOTYW</span>
-        <input type="color" id="colorPicker" value="#0088ff">
-    </div>
-
     <div class="header">
         <h1>GRANDRP <span>TRACKER</span></h1>
-        <div style="font-size: 9px; opacity: 0.3; letter-spacing: 6px; margin-top: 5px;">PRZMX EXCLUSIVE</div>
+        <div style="font-size: 10px; opacity: 0.3; letter-spacing: 8px; margin-top: 5px;">BY PRZMX</div>
     </div>
 
-    <div class="top-nav">
+    <div class="controls-row">
         <button class="nav-btn active" id="btn-all" onclick="setFilter('all')">WSZYSCY</button>
         <button class="nav-btn" id="btn-fav" onclick="setFilter('fav')">ULUBIONE</button>
+        <div class="color-wrapper" title="Zmień kolor">
+            <input type="color" id="colorPicker" value="#0088ff">
+        </div>
     </div>
 
     <div class="search-container">
         <input type="text" id="searchInput" class="search-box" placeholder="SZUKAJ CWELA..." oninput="updateDisplay()">
-    </div>
-
-    <div class="online-status">
-        ONLINE: <span id="onlineCount">0</span>
+        <div class="online-status">
+            <div class="dot"></div> ONLINE: <span id="onlineCount">0</span>
+        </div>
     </div>
 
     <div id="results"></div>
@@ -152,32 +160,30 @@
         const apiUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
         
         let allPlayers = [];
-        let favorites = JSON.parse(localStorage.getItem('fav_players')) || [];
+        let favorites = JSON.parse(localStorage.getItem('fav_v4')) || [];
         let currentFilter = 'all';
 
+        // Color Picker Logic
         const cp = document.getElementById('colorPicker');
         cp.addEventListener('input', (e) => {
             document.documentElement.style.setProperty('--main-color', e.target.value);
+            document.querySelector('.color-wrapper').style.background = e.target.value;
         });
 
         async function fetchData() {
             try {
                 const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
                 const data = await response.json();
-                // Pobieramy prawdziwe ID graczy z obiektu player.id
+                // To jest tablica graczy, p.id to ich unikalne ID na serwerze
                 allPlayers = data.Data.players;
                 document.getElementById('onlineCount').innerText = allPlayers.length;
                 updateDisplay();
-            } catch (e) { console.error("API Error:", e); }
+            } catch (e) { console.error("Error:", e); }
         }
 
-        function toggleFavorite(name) {
-            if (favorites.includes(name)) {
-                favorites = favorites.filter(f => f !== name);
-            } else {
-                favorites.push(name);
-            }
-            localStorage.setItem('fav_players', JSON.stringify(favorites));
+        function toggleFav(name) {
+            favorites.includes(name) ? favorites = favorites.filter(f => f !== name) : favorites.push(name);
+            localStorage.setItem('fav_v4', JSON.stringify(favorites));
             updateDisplay();
         }
 
@@ -189,34 +195,35 @@
         }
 
         function updateDisplay() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const term = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('results');
             
             let filtered = allPlayers.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || p.id.toString().includes(searchTerm)
+                p.name.toLowerCase().includes(term) || p.id.toString().includes(term)
             );
 
-            if (currentFilter === 'fav') {
-                filtered = filtered.filter(p => favorites.includes(p.name));
-            }
+            if (currentFilter === 'fav') filtered = filtered.filter(p => favorites.includes(p.name));
 
-            // Sortowanie po ID serwerowym
-            filtered.sort((a, b) => a.id - b.id);
+            // Sortujemy graczy tak, aby ulubieni byli na samej górze
+            filtered.sort((a, b) => {
+                const aFav = favorites.includes(a.name);
+                const bFav = favorites.includes(b.name);
+                if (aFav && !bFav) return -1;
+                if (!aFav && bFav) return 1;
+                return a.id - b.id;
+            });
 
-            container.innerHTML = filtered.map(p => {
-                const isFav = favorites.includes(p.name);
-                return `
-                    <div class="player-item">
-                        <div class="label-cwela">NICK CWELA</div>
-                        <div class="player-name">${p.name}</div>
-                        <span class="fav-star ${isFav ? 'is-fav' : ''}" onclick="toggleFavorite('${p.name}')">★</span>
-                        <div class="player-id-box">
-                            <span class="id-label">SERVER ID</span>
-                            <span class="id-value">#${p.id}</span>
-                        </div>
+            container.innerHTML = filtered.map(p => `
+                <div class="player-item">
+                    <div class="cwela-tag">NICK CWELA</div>
+                    <div class="player-name">${p.name}</div>
+                    <span class="star ${favorites.includes(p.name) ? 'is-fav' : ''}" onclick="toggleFav('${p.name}')">★</span>
+                    <div class="id-badge">
+                        <span class="id-label">SERVER ID</span>
+                        <span class="id-val">#${p.id}</span>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         }
 
         fetchData();
