@@ -3,31 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Graczy GrandRP</title>
+    <title>GrandRP Finder | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         body { 
-            background-color: #08090a; 
+            background-color: #0a0b0d; 
             color: #f8fafc; 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            /* Ładne kafelkowe tło */
+            /* Wyraźne kafelkowe tło */
             background-image: 
-                linear-gradient(rgba(249, 115, 22, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(249, 115, 22, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px);
             background-size: 40px 40px;
             min-height: 100vh;
         }
         
-        .card-player {
-            background: rgba(15, 17, 20, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        .glow-title {
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
         }
 
-        .card-player:hover {
+        .player-card {
+            background: rgba(20, 22, 26, 0.9);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+            backdrop-filter: blur(12px);
+            transition: 0.3s;
+        }
+
+        .player-card:hover {
             border-color: #f97316;
-            background: rgba(249, 115, 22, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -10px rgba(249, 115, 22, 0.
+            background: rgba(249, 115, 22, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .search-bar {
+            background: #111418;
+            border: 2px solid #1e293b;
+        }
+
+        .search-bar:focus-within {
+            border-color: #f97316;
+        }
+
+        .counter-badge {
+            background: rgba(249, 115, 22, 0.15);
+            border: 1px solid #f97316;
+            color: #f97316;
+        }
+    </style>
+</head>
+<body class="py-16 px-6">
+
+    <div class="max-w-6xl mx-auto text-center">
+        <div class="mb-12">
+            <h1 class="text-6xl font-extrabold tracking-tighter italic uppercase glow-title">
+                GRANDRP <span class="text-orange-500">FINDER</span>
+            </h1>
+            <p class="text-slate-500 font-bold uppercase tracking-[0.4em] text-[10px] mt-6">
+                System Monitorowania Obywateli • ID: 8RML8V
+            </p>
+        </div>
+
+        <div class="max-w-2xl mx-auto mb-16">
+            <div class="search-bar flex items-center px-8 py-5 rounded-2xl mb-6">
+                <input type="text" id="search" placeholder="SZUKAJ OBYWATELA (ID LUB NICK)..." 
+                    class="bg-transparent w-full text-center text-white outline-none font-bold text-lg placeholder-slate-700">
+            </div>
+            
+            <div class="flex justify-center">
+                <div class="counter-badge px-8 py-2 rounded-full text-sm font-black uppercase tracking-widest">
+                    AKTYWNI NA WYSPIE: <span id="count" class="ml-2 text-xl font-black">--</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left">
+            <div class="col-span-full text-center py-20 text-orange-500 font-bold animate-pulse uppercase tracking-widest">
+                Łączenie z bazą danych GrandRP...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const serverId = '8rml8v';
+        const proxy = "https://api.allorigins.win/raw?url=";
+        const target = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
+        
+        let allPlayers = [];
+
+        async function refreshData() {
+            try {
+                const response = await fetch(`${proxy}${encodeURIComponent(target)}&cache=${Date.now()}`);
+                const data = await response.json();
+
+                if (data?.Data?.players) {
+                    allPlayers = data.Data.players;
+                    localStorage.setItem('grand_v3_cache', JSON.stringify(allPlayers));
+                    renderUI(allPlayers);
+                }
+            } catch (e) {
+                console.log("Próba odświeżenia...");
+            }
+        }
+
+        function renderUI(list) {
+            const countBox = document.getElementById('count');
+            const listGrid = document.getElementById('player-list');
+            
+            countBox.innerText = list.length;
+            
+            if (list.length === 0) {
+                listGrid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-700 font-black">LISTA GRACZY JEST PUSTA LUB UKRYTA</div>';
+                return;
+            }
+
+            listGrid.innerHTML = list.map(p => `
+                <div class="player-card p-6 rounded-2xl">
+                    <div class="flex flex-col">
+                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">ID</span>
+                        <span class="text-3xl font-black text-white mb-4 leading-none">${p.id}</span>
+                        <div class="h-1 w-6 bg-orange-500 mb-4 shadow-[0_0_10px_#f97316]"></div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase truncate">
+                            ${p.name}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cache Start
+        const stored = localStorage.getItem('grand_v3_cache');
+        if (stored) {
+            allPlayers = JSON.parse(stored);
+            renderUI(allPlayers);
+        }
+
+        refreshData();
+        setInterval(refreshData, 30000);
+
+        document.getElementById('search').oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allPlayers.filter(p => 
+                p.name.toLowerCase().includes(val) || p.id.toString().includes(val)
+            );
+            renderUI(filtered);
+        };
+    </script>
+</body>
+</html>
