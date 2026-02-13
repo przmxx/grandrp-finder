@@ -3,129 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Neo Custom</title>
+    <title>GrandRP Finder | Neo Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent-color: #f97316;
-            --accent-glow: rgba(249, 115, 22, 0.4);
+            --accent-glow: rgba(249, 115, 22, 0.3);
         }
 
         body { 
-            background-color: #050607; 
+            background-color: #060709; 
             color: #f8fafc; 
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-image: 
                 linear-gradient(var(--accent-glow) 0.5px, transparent 0.5px),
                 linear-gradient(90deg, var(--accent-glow) 0.5px, transparent 0.5px);
-            background-size: 30px 30px;
+            background-size: 40px 40px;
             min-height: 100vh;
         }
         
-        .glow-title {
-            text-shadow: 0 0 30px var(--accent-color);
-        }
+        .glow-title { text-shadow: 0 0 30px var(--accent-color); }
 
         .neo-card {
-            background: rgba(10, 11, 14, 0.95);
+            background: rgba(13, 15, 18, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.03);
-            border-top: 2px solid var(--accent-color);
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: 3px solid var(--accent-color);
+            transition: all 0.2s ease-in-out;
         }
 
         .neo-card:hover {
-            transform: scale(1.05);
-            border-top-width: 5px;
-            box-shadow: 0 0 20px var(--accent-glow);
+            transform: translateY(-5px);
+            background: rgba(20, 22, 26, 1);
+            box-shadow: 0 10px 20px -5px var(--accent-glow);
         }
 
-        .custom-input {
+        .search-container {
             background: #0d0f12;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-bottom: 2px solid var(--accent-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 5px solid var(--accent-color);
         }
 
-        /* Panel Personalizacji */
-        .settings-panel {
-            background: rgba(15, 17, 20, 0.9);
-            border: 1px solid var(--accent-color);
+        .nav-panel {
+            background: rgba(15, 17, 20, 0.8);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        #colorPicker {
+        #picker {
             -webkit-appearance: none;
             border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
             cursor: pointer;
             background: none;
         }
-        #colorPicker::-webkit-color-swatch { border-radius: 8px; border: 2px solid white; }
+        #picker::-webkit-color-swatch { border-radius: 4px; border: 1px solid white; }
     </style>
 </head>
-<body class="py-12 px-6">
+<body class="py-10 px-6">
 
-    <div class="fixed bottom-6 right-6 z-50 settings-panel p-5 rounded-3xl flex flex-col items-center gap-3">
-        <span class="text-[10px] font-black uppercase tracking-widest text-white/50">Kolor Neo</span>
-        <input type="color" id="colorPicker" value="#f97316" oninput="changeTheme(this.value)">
-        <input type="text" id="hexInput" placeholder="#HEX" oninput="changeTheme(this.value)" 
-            class="bg-black/50 text-[10px] w-16 text-center rounded border border-white/10 uppercase py-1">
-    </div>
-
-    <div class="max-w-6xl mx-auto text-center">
-        <div class="mb-16">
-            <h1 class="text-6xl font-extrabold tracking-tighter italic uppercase glow-title italic">
-                GRANDRP <span id="dynamicTitle" style="color: var(--accent-color)">FINDER</span>
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
+            <h1 class="text-5xl font-extrabold tracking-tighter italic uppercase glow-title leading-none">
+                GRANDRP <span style="color: var(--accent-color)">FINDER</span>
             </h1>
-            <p class="text-white/30 font-bold uppercase tracking-[0.5em] text-[10px] mt-6">System Lokalizacji Cweli v5.0</p>
-        </div>
 
-        <div class="flex flex-center justify-center gap-4 mb-12">
-            <button onclick="switchServer('8rml8v', this)" class="server-tab active bg-white/5 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest border border-white/10 hover:border-orange-500 transition-all">Serwer 1</button>
-            <button onclick="switchServer('dyrx5y', this)" class="server-tab bg-white/5 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest border border-white/10 hover:border-orange-500 transition-all">Serwer 2</button>
-        </div>
-
-        <div class="max-w-xl mx-auto mb-20">
-            <input type="text" id="search" placeholder="SZUKAJ CWELA PO ID LUB NICKU..." 
-                class="custom-input w-full py-5 px-8 text-center text-white outline-none font-bold text-xl placeholder-white/10 rounded-t-2xl uppercase tracking-widest">
-            <div class="bg-black/40 py-3 rounded-b-2xl border-x border-b border-white/5 text-[10px] font-bold tracking-[0.3em] uppercase opacity-50">
-                Wykryto jednostek: <span id="count" class="text-base" style="color: var(--accent-color)">--</span>
+            <div class="nav-panel flex items-center gap-6 px-6 py-3 rounded-2xl">
+                <div class="flex gap-2">
+                    <button onclick="changeSrv('8rml8v', this)" class="srv-tab active text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500 transition-all">Sektor 1</button>
+                    <button onclick="changeSrv('dyrx5y', this)" class="srv-tab text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500 transition-all">Sektor 2</button>
+                </div>
+                <div class="flex items-center gap-3 border-l border-white/10 pl-6">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-white/40">Kolor</span>
+                    <input type="color" id="picker" value="#f97316" oninput="applyTheme(this.value)">
+                </div>
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 text-left">
+        <div class="max-w-3xl mx-auto mb-16">
+            <div class="search-container rounded-xl overflow-hidden shadow-2xl">
+                <input type="text" id="search" placeholder="SZUKAJ CWELA..." 
+                    class="w-full bg-transparent py-6 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter">
+            </div>
+            <div class="mt-4 text-center">
+                <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
+                    Aktywne obiekty w sektorze: <span id="count" class="text-lg italic font-extrabold" style="color: var(--accent-color)">0</span>
+                </span>
+            </div>
+        </div>
+
+        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left">
             </div>
     </div>
 
     <script>
-        let currentServer = '8rml8v';
-        const proxy = "https://api.allorigins.win/raw?url=";
-        let allPlayers = [];
+        let currentSrv = '8rml8v';
+        let allData = [];
 
-        function changeTheme(color) {
-            if(!color.startsWith('#')) color = '#' + color;
+        function applyTheme(color) {
             const root = document.documentElement;
             root.style.setProperty('--accent-color', color);
-            root.style.setProperty('--accent-glow', color + '33');
-            document.getElementById('colorPicker').value = color;
-            document.getElementById('hexInput').value = color.toUpperCase();
-            localStorage.setItem('neo_theme', color);
+            root.style.setProperty('--accent-glow', color + '44');
+            localStorage.setItem('grand_theme_v2', color);
         }
 
-        async function update() {
-            const target = `https://servers-frontend.fivem.net/api/servers/single/${currentServer}`;
+        async function fetchData() {
+            const proxy = "https://api.allorigins.win/raw?url=";
+            const target = `https://servers-frontend.fivem.net/api/servers/single/${currentSrv}`;
             try {
                 const r = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`);
                 const d = await r.json();
                 if (d?.Data?.players) {
-                    // SORTOWANIE OD NAJNIŻSZEGO DO NAJWIĘKSZEGO ID
-                    allPlayers = d.Data.players.sort((a, b) => a.id - b.id);
-                    render(allPlayers);
+                    // SORTOWANIE OD NAJNIŻSZEGO ID
+                    allData = d.Data.players.sort((a, b) => a.id - b.id);
+                    render(allData);
                 }
-            } catch (e) { console.log("Sync..."); }
+            } catch (e) { console.log("Próba odświeżenia..."); }
         }
 
         function render(list) {
@@ -133,41 +128,46 @@
             const container = document.getElementById('player-list');
             
             if (list.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-20 opacity-20 uppercase font-black italic">Brak cweli w sektorze</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-32 opacity-10 uppercase font-black italic tracking-[1em]">Brak Sygnału</div>';
                 return;
             }
 
             container.innerHTML = list.map(p => `
-                <div class="neo-card p-6 rounded-xl relative overflow-hidden">
+                <div class="neo-card p-6 rounded-xl relative group">
                     <div class="flex flex-col">
-                        <span class="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1 leading-none">ID CWELA</span>
-                        <span class="text-4xl font-black text-white mb-4 italic leading-none">${p.id}</span>
-                        <span class="text-[10px] font-bold text-white/60 uppercase truncate">
-                            ${p.name}
-                        </span>
+                        <span class="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1 leading-none">ID CWELA</span>
+                        <span class="text-4xl font-black text-white mb-4 leading-none">${p.id}</span>
+                        <div class="h-[2px] w-4 transition-all group-hover:w-full" style="background: var(--accent-color)"></div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase truncate mt-4">${p.name}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function switchServer(id, btn) {
-            document.querySelectorAll('.server-tab').forEach(b => b.classList.remove('border-orange-500', 'text-orange-500'));
-            currentServer = id;
-            update();
+        function changeSrv(id, btn) {
+            document.querySelectorAll('.srv-tab').forEach(t => {
+                t.classList.remove('active');
+                t.style.borderColor = 'rgba(255,255,255,0.05)';
+            });
+            btn.classList.add('active');
+            btn.style.borderColor = 'var(--accent-color)';
+            currentSrv = id;
+            fetchData();
         }
 
-        const saved = localStorage.getItem('neo_theme');
-        if (saved) changeTheme(saved);
+        // Załaduj motyw
+        const saved = localStorage.getItem('grand_theme_v2');
+        if (saved) {
+            applyTheme(saved);
+            document.getElementById('picker').value = saved;
+        }
 
-        update();
-        setInterval(update, 30000);
+        fetchData();
+        setInterval(fetchData, 30000);
 
         document.getElementById('search').oninput = (e) => {
             const val = e.target.value.toLowerCase();
-            const filtered = allPlayers.filter(p => 
-                p.name.toLowerCase().includes(val) || p.id.toString().includes(val)
-            );
-            render(filtered);
+            render(allData.filter(p => p.name.toLowerCase().includes(val) || p.id.toString().includes(val)));
         };
     </script>
 </body>
