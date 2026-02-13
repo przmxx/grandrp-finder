@@ -3,181 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Tracker - Final Fix</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>GrandRP Tracker - Endpoint ID Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #0088ff; --bg: #020202; }
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
+        :root {
+            --main: #0088ff; /* Startowy niebieski */
+            --bg: #020202;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
             margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
+
         .bg-grid {
             position: fixed; top: 0; width: 100%; height: 100%;
             background: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
                         linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
-            background-size: 40px 40px; transform: perspective(500px) rotateX(60deg);
+            background-size: 50px 50px; transform: perspective(500px) rotateX(60deg);
             z-index: -1; mask-image: linear-gradient(to bottom, transparent, black);
         }
-        .header { margin-top: 40px; text-align: center; }
-        .header h1 { 
-            font-family: 'Orbitron', sans-serif; font-size: 50px; margin: 0; 
-            text-shadow: 0 0 20px var(--main); font-style: italic; 
+
+        .header { margin-top: 50px; text-align: center; }
+        .header h1 {
+            font-family: 'Orbitron', sans-serif; font-size: 52px; margin: 0;
+            text-shadow: 0 0 25px var(--main); font-style: italic; letter-spacing: -2px;
         }
         .header span { color: var(--main); }
 
-        .menu { 
-            display: flex; gap: 10px; margin: 30px 0; background: rgba(255,255,255,0.03); 
-            padding: 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);
-            align-items: center;
+        .nav-bar {
+            display: flex; align-items: center; gap: 12px; margin: 35px 0;
+            background: var(--glass); padding: 10px 20px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
         }
-        .btn { 
-            background: transparent; border: 1px solid transparent; color: #666; 
-            padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s;
-        }
-        .btn.active { border-color: var(--main); color: #fff; box-shadow: 0 0 10px var(--main); }
-        .btn:hover { color: #fff; }
 
-        .color-circle {
-            width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff;
-            position: relative; overflow: hidden; cursor: pointer;
+        .btn {
+            background: transparent; border: 1px solid transparent; color: #555;
+            padding: 8px 18px; border-radius: 6px; cursor: pointer;
+            font-weight: 700; text-transform: uppercase; font-size: 13px; transition: 0.3s;
         }
+        .btn.active { border-color: var(--main); color: #fff; box-shadow: 0 0 15px var(--main); }
+        .btn:hover:not(.active) { color: #aaa; }
+
+        .color-selector {
+            width: 34px; height: 34px; border-radius: 8px; border: 2px solid #fff;
+            position: relative; overflow: hidden; cursor: pointer; transition: 0.3s;
+        }
+        .color-selector:hover { transform: scale(1.1); }
         #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
 
-        .search-wrap { width: 90%; max-width: 600px; text-align: center; }
-        .search-box { 
+        .search-area { width: 90%; max-width: 650px; text-align: center; }
+        .search-input {
             width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--main);
-            padding: 10px; color: #fff; font-size: 28px; text-align: center; outline: none;
-            font-family: 'Orbitron', sans-serif; letter-spacing: 4px;
+            padding: 12px; color: #fff; font-size: 32px; text-align: center; outline: none;
+            font-family: 'Orbitron', sans-serif; letter-spacing: 5px; transition: 0.3s;
         }
-        .search-box::placeholder { opacity: 0.2; }
+        .search-input::placeholder { opacity: 0.15; }
 
-        .status { margin: 20px 0; font-weight: 700; color: var(--main); letter-spacing: 2px; }
+        .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 3px; font-size: 14px; }
 
-        #results { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; width: 90%; max-width: 1200px; padding-bottom: 50px;
+        #results {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 25px; width: 92%; max-width: 1300px; padding-bottom: 60px;
         }
-        .card { 
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-            padding: 20px; border-radius: 15px; position: relative; transition: 0.3s;
-            backdrop-filter: blur(10px);
+
+        .player-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06); padding: 25px; border-radius: 18px;
+            position: relative; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(12px);
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--main); box-shadow: 0 0 20px rgba(0,136,255,0.1); }
-        
-        .tag { 
+        .player-card:hover {
+            transform: translateY(-8px); border-color: var(--main);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(var(--main-rgb), 0.1);
+        }
+
+        .label {
             background: var(--main); color: #000; font-size: 10px; font-weight: 900;
-            padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px;
+            padding: 3px 10px; border-radius: 4px; display: inline-block;
+            margin-bottom: 15px; letter-spacing: 1px;
         }
-        .name { font-size: 20px; font-weight: 700; }
-        .id-box { position: absolute; bottom: 20px; right: 20px; text-align: right; }
-        .id-lab { font-size: 9px; color: #444; display: block; }
-        .id-val { color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; }
-        
-        .star { position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 20px; color: rgba(255,255,255,0.05); }
-        .star.active { color: var(--main); text-shadow: 0 0 10px var(--main); }
+        .name { font-size: 22px; font-weight: 700; color: #eee; }
 
-        .loader { font-size: 12px; color: #444; margin-top: 5px; }
+        .id-container { position: absolute; bottom: 25px; right: 25px; text-align: right; }
+        .id-title { font-size: 9px; color: #444; display: block; font-weight: 800; }
+        .id-value { color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; }
+
+        .star-fav {
+            position: absolute; top: 25px; right: 25px; cursor: pointer;
+            font-size: 22px; color: rgba(255,255,255,0.04); transition: 0.2s;
+        }
+        .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
+
+        .sync-info { font-size: 11px; color: #333; margin-top: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="bg-grid"></div>
-    
+
     <div class="header">
         <h1>GRANDRP <span>TRACKER</span></h1>
     </div>
 
-    <div class="menu">
-        <button class="btn active" id="b-all" onclick="setF('all')">WSZYSCY</button>
-        <button class="btn" id="b-fav" onclick="setF('fav')">ULUBIONE</button>
-        <button class="btn" onclick="fetchData()">ODŚWIEŻ ↻</button>
-        <div class="color-circle" id="c-circ" style="background: #0088ff;">
+    <div class="nav-bar">
+        <button class="btn active" id="filter-all" onclick="updateFilter('all')">WSZYSCY</button>
+        <button class="btn" id="filter-fav" onclick="updateFilter('fav')">ULUBIONE</button>
+        <button class="btn" onclick="fetchServerData()">ODŚWIEŻ ↻</button>
+        <div class="color-selector" id="theme-preview" title="Zmień kolor">
             <input type="color" id="colorPicker" value="#0088ff">
         </div>
     </div>
 
-    <div class="search-wrap">
-        <input type="text" id="sInput" class="search-box" placeholder="SZUKAJ CWELA..." oninput="draw()">
-        <div class="status">ONLINE: <span id="count">0</span></div>
-        <div id="load-msg" class="loader">OCZEKIWANIE NA DANE...</div>
+    <div class="search-area">
+        <input type="text" id="searchInput" class="search-input" placeholder="SZUKAJ CWELA..." oninput="render()">
+        <div class="status-bar">ONLINE: <span id="onlineCount">0</span></div>
+        <div id="sync-status" class="sync-info">POBIERANIE DANYCH...</div>
     </div>
 
     <div id="results"></div>
 
     <script>
-        const sID = "8rml8v";
+        const serverCode = "8rml8v";
         const proxy = "https://corsproxy.io/?";
         let players = [];
-        let favs = JSON.parse(localStorage.getItem('grp_fav')) || [];
-        let filter = 'all';
+        let favs = JSON.parse(localStorage.getItem('grand_tracker_favs')) || [];
+        let activeFilter = 'all';
 
-        // Obsługa kolorów
+        // Color Management
         const cp = document.getElementById('colorPicker');
         cp.addEventListener('input', (e) => {
-            const col = e.target.value;
-            document.documentElement.style.setProperty('--main', col);
-            document.getElementById('c-circ').style.background = col;
+            const val = e.target.value;
+            document.documentElement.style.setProperty('--main', val);
+            document.getElementById('theme-preview').style.background = val;
         });
 
-        async function fetchData() {
-            document.getElementById('load-msg').innerText = "SYNCHRONIZACJA Z SERWEREM...";
+        async function fetchServerData() {
+            const statusText = document.getElementById('sync-status');
+            statusText.innerText = "SYNCHRONIZACJA ENDPOINT ID...";
             try {
-                // Dodajemy timestamp, aby uniknąć cache (aktualizacja przy odświeżeniu)
-                const ts = new Date().getTime();
-                const url = `${proxy}${encodeURIComponent(`https://servers-frontend.fivem.net/api/servers/single/${sID}?v=${ts}`)}`;
+                // Cache busting timestamp
+                const timestamp = new Date().getTime();
+                const apiUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverCode}?v=${timestamp}`;
                 
-                const res = await fetch(url);
-                const d = await res.json();
+                const response = await fetch(proxy + encodeURIComponent(apiUrl));
+                const json = await response.json();
                 
-                players = d.Data.players || [];
-                document.getElementById('count').innerText = players.length;
-                document.getElementById('load-msg').innerText = "DANE AKTUALNE";
-                draw();
-            } catch (e) {
-                document.getElementById('load-msg').innerText = "BŁĄD POŁĄCZENIA";
+                players = json.Data.players || [];
+                document.getElementById('onlineCount').innerText = players.length;
+                statusText.innerText = "DANE ZSYNCHRONIZOWANE";
+                render();
+            } catch (err) {
+                statusText.innerText = "BŁĄD POŁĄCZENIA Z API";
+                console.error(err);
             }
         }
 
-        function toggle(name) {
-            favs.includes(name) ? favs = favs.filter(x => x !== name) : favs.push(name);
-            localStorage.setItem('grp_fav', JSON.stringify(favs));
-            draw();
+        function toggleFav(name) {
+            favs.includes(name) ? favs = favs.filter(n => n !== name) : favs.push(name);
+            localStorage.setItem('grand_tracker_favs', JSON.stringify(favs));
+            render();
         }
 
-        function setF(t) {
-            filter = t;
-            document.getElementById('b-all').classList.toggle('active', t === 'all');
-            document.getElementById('b-fav').classList.toggle('active', t === 'fav');
-            draw();
+        function updateFilter(f) {
+            activeFilter = f;
+            document.getElementById('filter-all').classList.toggle('active', f === 'all');
+            document.getElementById('filter-fav').classList.toggle('active', f === 'fav');
+            render();
         }
 
-        function draw() {
-            const s = document.getElementById('sInput').value.toLowerCase();
-            const res = document.getElementById('results');
+        function render() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const container = document.getElementById('results');
             
-            let f = players.filter(p => p.name.toLowerCase().includes(s) || p.id.toString().includes(s));
-            if (filter === 'fav') f = f.filter(p => favs.includes(p.name));
+            let displayList = players.filter(p => 
+                p.name.toLowerCase().includes(term) || p.id.toString().includes(term)
+            );
 
-            // Sortowanie: Ulubieni zawsze góra, potem po ID
-            f.sort((a,b) => {
-                let af = favs.includes(a.name), bf = favs.includes(b.name);
-                return (af === bf) ? a.id - b.id : af ? -1 : 1;
+            if (activeFilter === 'fav') {
+                displayList = displayList.filter(p => favs.includes(p.name));
+            }
+
+            // Sort: Favorites first, then by Endpoint ID
+            displayList.sort((a, b) => {
+                const aF = favs.includes(a.name);
+                const bF = favs.includes(b.name);
+                if (aF !== bF) return aF ? -1 : 1;
+                return a.id - b.id;
             });
 
-            res.innerHTML = f.map(p => `
-                <div class="card">
-                    <div class="tag">NICK CWELA</div>
+            container.innerHTML = displayList.map(p => `
+                <div class="player-card">
+                    <div class="label">NICK CWELA</div>
                     <div class="name">${p.name}</div>
-                    <span class="star ${favs.includes(p.name) ? 'active' : ''}" onclick="toggle('${p.name}')">★</span>
-                    <div class="id-box">
-                        <span class="id-lab">ID GRACZA</span>
-                        <span class="id-val">#${p.id}</span>
+                    <span class="star-fav ${favs.includes(p.name) ? 'is-active' : ''}" onclick="toggleFav('${p.name}')">★</span>
+                    <div class="id-container">
+                        <span class="id-title">ENDPOINT ID</span>
+                        <span class="id-value">#${p.id}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        fetchData();
-        setInterval(fetchData, 40000); // Automatyczny refresh co 40s
+        // Initialize
+        fetchServerData();
+        // Auto-refresh co 30 sekund
+        setInterval(fetchServerData, 30000);
     </script>
 </body>
 </html>
