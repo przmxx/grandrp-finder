@@ -3,63 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Multiserver</title>
+    <title>GrandRP Finder | Personalizacja</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --accent-color: #f97316; /* Domyślny pomarańcz */
+            --accent-glow: rgba(249, 115, 22, 0.5);
+        }
+
         body { 
             background-color: #0a0b0d; 
             color: #f8fafc; 
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-image: 
-                linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(var(--accent-glow) 0.5px, transparent 0.5px),
+                linear-gradient(90deg, var(--accent-glow) 0.5px, transparent 0.5px);
+            background-size: 50px 50px;
             min-height: 100vh;
+            transition: background 0.5s ease;
         }
         
         .glow-title {
             color: #ffffff;
-            text-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
+            text-shadow: 0 0 30px var(--accent-glow);
+            transition: text-shadow 0.3s ease;
         }
 
         .server-btn {
             background: rgba(15, 17, 20, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: 0.3s;
-            cursor: pointer;
         }
 
         .server-btn.active {
-            border-color: #f97316;
-            background: rgba(249, 115, 22, 0.15);
-            color: #f97316;
-            box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+            border-color: var(--accent-color);
+            background: var(--accent-glow);
+            color: var(--accent-color);
         }
 
         .player-card {
             background: rgba(20, 22, 26, 0.9);
-            border: 1px solid rgba(249, 115, 22, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent-color);
             backdrop-filter: blur(12px);
             transition: 0.3s;
         }
 
         .player-card:hover {
-            border-color: #f97316;
+            border-color: var(--accent-color);
+            background: var(--accent-glow);
             transform: translateY(-4px);
-            background: rgba(249, 115, 22, 0.05);
         }
 
-        .search-bar { background: #111418; border: 2px solid #1e293b; }
-        .search-bar:focus-within { border-color: #f97316; }
+        .accent-text { color: var(--accent-color); }
+        .accent-bg { background-color: var(--accent-color); }
+        .accent-border { border-color: var(--accent-color); }
+
+        /* Panel Kolorów */
+        .color-picker-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .color-picker-dot:hover { transform: scale(1.2); }
+        .color-picker-dot.active { border-color: white; transform: scale(1.1); }
     </style>
 </head>
 <body class="py-12 px-6">
 
+    <div class="fixed bottom-6 left-6 z-50 bg-[#0f1115] border border-white/10 p-4 rounded-2xl flex flex-col gap-3 shadow-2xl">
+        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Motyw</span>
+        <div class="flex gap-2">
+            <div onclick="changeTheme('#f97316')" class="color-picker-dot bg-orange-500" title="Pomarańcz"></div>
+            <div onclick="changeTheme('#3b82f6')" class="color-picker-dot bg-blue-500" title="Błękit"></div>
+            <div onclick="changeTheme('#10b981')" class="color-picker-dot bg-emerald-500" title="Zieleń"></div>
+            <div onclick="changeTheme('#ec4899')" class="color-picker-dot bg-pink-500" title="Róż"></div>
+            <div onclick="changeTheme('#a855f7')" class="color-picker-dot bg-purple-500" title="Fiolet"></div>
+            <div onclick="changeTheme('#ffffff')" class="color-picker-dot bg-white" title="Biel"></div>
+        </div>
+    </div>
+
     <div class="max-w-6xl mx-auto text-center">
         <div class="mb-10">
             <h1 class="text-5xl font-extrabold tracking-tighter italic uppercase glow-title">
-                GRANDRP <span class="text-orange-500">FINDER</span>
+                GRANDRP <span class="accent-text">FINDER</span>
             </h1>
         </div>
 
@@ -73,17 +104,16 @@
         </div>
 
         <div class="max-w-2xl mx-auto mb-16">
-            <div class="search-bar flex items-center px-8 py-4 rounded-2xl mb-6">
+            <div class="bg-[#0f1115] border-b-2 accent-border flex items-center px-8 py-4 rounded-t-2xl mb-4">
                 <input type="text" id="search" placeholder="SZUKAJ OBYWATELA..." 
-                    class="bg-transparent w-full text-center text-white outline-none font-bold placeholder-slate-700">
+                    class="bg-transparent w-full text-center text-white outline-none font-bold placeholder-slate-700 uppercase">
             </div>
-            <div class="text-orange-500 font-black uppercase tracking-widest text-xs">
+            <div class="accent-text font-black uppercase tracking-widest text-xs">
                 AKTYWNI: <span id="count" class="text-2xl ml-2 italic">--</span>
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left">
-            </div>
+        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left"></div>
     </div>
 
     <script>
@@ -91,19 +121,26 @@
         const proxy = "https://api.allorigins.win/raw?url=";
         let allPlayers = [];
 
+        // Funkcja zmiany motywu
+        function changeTheme(color) {
+            const root = document.documentElement;
+            root.style.setProperty('--accent-color', color);
+            // Tworzenie przezroczystości dla poświaty
+            const glow = color === '#ffffff' ? 'rgba(255,255,255,0.2)' : color + '44';
+            root.style.setProperty('--accent-glow', glow);
+            localStorage.setItem('grand_theme', color);
+        }
+
         async function refreshData() {
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentServer}`;
             try {
                 const response = await fetch(`${proxy}${encodeURIComponent(target)}&cache=${Date.now()}`);
                 const data = await response.json();
-
                 if (data?.Data?.players) {
                     allPlayers = data.Data.players;
                     renderUI(allPlayers);
                 }
-            } catch (e) {
-                console.log("Łączenie...");
-            }
+            } catch (e) { console.log("Łączenie..."); }
         }
 
         function renderUI(list) {
@@ -112,32 +149,32 @@
             countBox.innerText = list.length;
             
             if (list.length === 0) {
-                listGrid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-700 font-black uppercase">Brak danych o graczach</div>';
+                listGrid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-700 font-black uppercase italic opacity-50">Skanowanie sektora...</div>';
                 return;
             }
 
             listGrid.innerHTML = list.map(p => `
                 <div class="player-card p-6 rounded-2xl">
-                    <span class="text-[9px] font-black text-slate-500 uppercase block mb-1">ID</span>
+                    <span class="text-[9px] font-black text-slate-500 uppercase block mb-1">ID Obywatela</span>
                     <span class="text-3xl font-black text-white block mb-3 leading-none">${p.id}</span>
-                    <div class="h-1 w-6 bg-orange-500 mb-4"></div>
+                    <div class="h-1 w-6 accent-bg mb-4"></div>
                     <span class="text-[11px] font-bold text-slate-400 uppercase truncate block">${p.name}</span>
                 </div>
             `).join('');
         }
 
         function switchServer(id, btn) {
-            // Zmień aktywny przycisk
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
-            // Zmień serwer i odśwież
             currentServer = id;
-            document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-orange-500 animate-pulse">ŁĄCZENIE Z NOWYM SEKTOREM...</div>';
+            document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 accent-text animate-pulse font-black uppercase tracking-widest">Przełączanie kanału...</div>';
             refreshData();
         }
 
-        // Start
+        // Wczytaj zapisany motyw
+        const savedTheme = localStorage.getItem('grand_theme');
+        if (savedTheme) changeTheme(savedTheme);
+
         refreshData();
         setInterval(refreshData, 30000);
 
