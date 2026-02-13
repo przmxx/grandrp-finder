@@ -3,124 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Tracker - Endpoint ID Edition</title>
+    <title>GrandRP Tracker - GOAT Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --main: #0088ff; /* Startowy niebieski */
-            --bg: #020202;
-            --glass: rgba(255, 255, 255, 0.03);
-        }
-
-        body {
-            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
-            margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-        }
-
-        .bg-grid {
-            position: fixed; top: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
-            background-size: 50px 50px; transform: perspective(500px) rotateX(60deg);
-            z-index: -1; mask-image: linear-gradient(to bottom, transparent, black);
-        }
-
+        :root { --main: #0088ff; --bg: #020202; --goat-color: #ffaa00; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .bg-grid { position: fixed; top: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); z-index: -1; mask-image: linear-gradient(to bottom, transparent, black); }
         .header { margin-top: 50px; text-align: center; }
-        .header h1 {
-            font-family: 'Orbitron', sans-serif; font-size: 52px; margin: 0;
-            text-shadow: 0 0 25px var(--main); font-style: italic; letter-spacing: -2px;
-        }
-        .header span { color: var(--main); }
-
-        .nav-bar {
-            display: flex; align-items: center; gap: 12px; margin: 35px 0;
-            background: var(--glass); padding: 10px 20px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-        }
-
-        .btn {
-            background: transparent; border: 1px solid transparent; color: #555;
-            padding: 8px 18px; border-radius: 6px; cursor: pointer;
-            font-weight: 700; text-transform: uppercase; font-size: 13px; transition: 0.3s;
-        }
+        .header h1 { font-family: 'Orbitron', sans-serif; font-size: 52px; margin: 0; text-shadow: 0 0 25px var(--main); font-style: italic; }
+        .nav-bar { display: flex; align-items: center; gap: 12px; margin: 35px 0; background: rgba(255,255,255,0.03); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .btn { background: transparent; border: 1px solid transparent; color: #555; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: 700; text-transform: uppercase; transition: 0.3s; }
         .btn.active { border-color: var(--main); color: #fff; box-shadow: 0 0 15px var(--main); }
-        .btn:hover:not(.active) { color: #aaa; }
-
-        .color-selector {
-            width: 34px; height: 34px; border-radius: 8px; border: 2px solid #fff;
-            position: relative; overflow: hidden; cursor: pointer; transition: 0.3s;
-        }
-        .color-selector:hover { transform: scale(1.1); }
+        .color-selector { width: 34px; height: 34px; border-radius: 8px; border: 2px solid #fff; position: relative; overflow: hidden; cursor: pointer; }
         #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
-
-        .search-area { width: 90%; max-width: 650px; text-align: center; }
-        .search-input {
-            width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--main);
-            padding: 12px; color: #fff; font-size: 32px; text-align: center; outline: none;
-            font-family: 'Orbitron', sans-serif; letter-spacing: 5px; transition: 0.3s;
-        }
-        .search-input::placeholder { opacity: 0.15; }
-
+        .search-input { width: 90%; max-width: 650px; background: transparent; border: none; border-bottom: 2px solid var(--main); padding: 12px; color: #fff; font-size: 32px; text-align: center; outline: none; font-family: 'Orbitron', sans-serif; letter-spacing: 5px; }
         .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 3px; font-size: 14px; }
-
-        #results {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-            gap: 25px; width: 92%; max-width: 1300px; padding-bottom: 60px;
-        }
-
-        .player-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255,255,255,0.06); padding: 25px; border-radius: 18px;
-            position: relative; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            backdrop-filter: blur(12px);
-        }
-        .player-card:hover {
-            transform: translateY(-8px); border-color: var(--main);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(var(--main-rgb), 0.1);
-        }
-
-        .label {
-            background: var(--main); color: #000; font-size: 10px; font-weight: 900;
-            padding: 3px 10px; border-radius: 4px; display: inline-block;
-            margin-bottom: 15px; letter-spacing: 1px;
-        }
-        .name { font-size: 22px; font-weight: 700; color: #eee; }
-
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 25px; width: 92%; max-width: 1300px; padding-bottom: 60px; }
+        
+        .player-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 25px; border-radius: 18px; position: relative; transition: 0.4s; backdrop-filter: blur(12px); }
+        .player-card:hover { transform: translateY(-8px); border-color: var(--main); }
+        
+        .label { font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-bottom: 15px; text-transform: uppercase; color: #000; }
+        .label-cwela { background: var(--main); }
+        .label-goat { background: var(--goat-color); box-shadow: 0 0 15px var(--goat-color); }
+        
+        .name { font-size: 22px; font-weight: 700; word-break: break-all; }
         .id-container { position: absolute; bottom: 25px; right: 25px; text-align: right; }
-        .id-title { font-size: 9px; color: #444; display: block; font-weight: 800; }
         .id-value { color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; }
-
-        .star-fav {
-            position: absolute; top: 25px; right: 25px; cursor: pointer;
-            font-size: 22px; color: rgba(255,255,255,0.04); transition: 0.2s;
-        }
+        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.04); }
         .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
-
-        .sync-info { font-size: 11px; color: #333; margin-top: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="bg-grid"></div>
-
-    <div class="header">
-        <h1>GRANDRP <span>TRACKER</span></h1>
-    </div>
-
+    <div class="header"><h1>GRANDRP <span>TRACKER</span></h1></div>
     <div class="nav-bar">
         <button class="btn active" id="filter-all" onclick="updateFilter('all')">WSZYSCY</button>
         <button class="btn" id="filter-fav" onclick="updateFilter('fav')">ULUBIONE</button>
         <button class="btn" onclick="fetchServerData()">ODŚWIEŻ ↻</button>
-        <div class="color-selector" id="theme-preview" title="Zmień kolor">
-            <input type="color" id="colorPicker" value="#0088ff">
-        </div>
+        <div class="color-selector" id="theme-preview" style="background: #0088ff;"><input type="color" id="colorPicker" value="#0088ff"></div>
     </div>
-
-    <div class="search-area">
-        <input type="text" id="searchInput" class="search-input" placeholder="SZUKAJ CWELA..." oninput="render()">
-        <div class="status-bar">ONLINE: <span id="onlineCount">0</span></div>
-        <div id="sync-status" class="sync-info">POBIERANIE DANYCH...</div>
-    </div>
-
+    <input type="text" id="searchInput" class="search-input" placeholder="SZUKAJ..." oninput="render()">
+    <div class="status-bar">ONLINE: <span id="onlineCount">0</span></div>
     <div id="results"></div>
 
     <script>
@@ -130,7 +54,6 @@
         let favs = JSON.parse(localStorage.getItem('grand_tracker_favs')) || [];
         let activeFilter = 'all';
 
-        // Color Management
         const cp = document.getElementById('colorPicker');
         cp.addEventListener('input', (e) => {
             const val = e.target.value;
@@ -139,24 +62,15 @@
         });
 
         async function fetchServerData() {
-            const statusText = document.getElementById('sync-status');
-            statusText.innerText = "SYNCHRONIZACJA ENDPOINT ID...";
             try {
-                // Cache busting timestamp
                 const timestamp = new Date().getTime();
                 const apiUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverCode}?v=${timestamp}`;
-                
                 const response = await fetch(proxy + encodeURIComponent(apiUrl));
                 const json = await response.json();
-                
                 players = json.Data.players || [];
                 document.getElementById('onlineCount').innerText = players.length;
-                statusText.innerText = "DANE ZSYNCHRONIZOWANE";
                 render();
-            } catch (err) {
-                statusText.innerText = "BŁĄD POŁĄCZENIA Z API";
-                console.error(err);
-            }
+            } catch (err) { console.error("Błąd API"); }
         }
 
         function toggleFav(name) {
@@ -175,39 +89,29 @@
         function render() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('results');
+            let list = players.filter(p => p.name.toLowerCase().includes(term) || p.id.toString().includes(term));
             
-            let displayList = players.filter(p => 
-                p.name.toLowerCase().includes(term) || p.id.toString().includes(term)
-            );
+            if (activeFilter === 'fav') list = list.filter(p => favs.includes(p.name));
 
-            if (activeFilter === 'fav') {
-                displayList = displayList.filter(p => favs.includes(p.name));
-            }
+            container.innerHTML = list.map(p => {
+                const lowerName = p.name.toLowerCase();
+                // Sprawdzanie bez względu na wielkość liter
+                const isGoat = lowerName.includes('przmx') || lowerName.includes('kejcpi');
+                const labelText = isGoat ? "NICK GOAT'A" : "NICK CWELA";
+                const labelClass = isGoat ? "label-goat" : "label-cwela";
 
-            // Sort: Favorites first, then by Endpoint ID
-            displayList.sort((a, b) => {
-                const aF = favs.includes(a.name);
-                const bF = favs.includes(b.name);
-                if (aF !== bF) return aF ? -1 : 1;
-                return a.id - b.id;
-            });
-
-            container.innerHTML = displayList.map(p => `
+                return `
                 <div class="player-card">
-                    <div class="label">NICK CWELA</div>
+                    <div class="label ${labelClass}">${labelText}</div>
                     <div class="name">${p.name}</div>
                     <span class="star-fav ${favs.includes(p.name) ? 'is-active' : ''}" onclick="toggleFav('${p.name}')">★</span>
-                    <div class="id-container">
-                        <span class="id-title">ENDPOINT ID</span>
-                        <span class="id-value">#${p.id}</span>
-                    </div>
+                    <div class="id-container"><span class="id-value">#${p.id}</span></div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Initialize
         fetchServerData();
-        // Auto-refresh co 30 sekund
         setInterval(fetchServerData, 30000);
     </script>
 </body>
