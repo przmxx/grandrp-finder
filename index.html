@@ -34,6 +34,7 @@
         <div class="modal-box text-center" onclick="event.stopPropagation()">
             <h2 id="modalName" class="text-3xl font-black italic uppercase mb-2 text-white">---</h2>
             <div id="modalStatus" class="font-bold mb-6 uppercase text-xl">---</div>
+            
             <div class="grid grid-cols-2 gap-4 mb-6 text-left">
                 <div class="bg-white/5 p-3 rounded border border-white/5">
                     <span class="text-[9px] text-white/30 uppercase block font-bold">Czas Sesji</span>
@@ -44,6 +45,7 @@
                     <span id="modalLastSeen" class="text-lg font-black text-white">---</span>
                 </div>
             </div>
+
             <div class="bg-white/5 p-4 rounded text-[10px] font-mono text-blue-300 break-all border border-white/5">
                 <span class="block text-white/20 mb-2 uppercase tracking-widest font-bold">Historia ID</span>
                 <span id="modalLogs"></span>
@@ -64,7 +66,7 @@
                 <span id="hexLabel" class="text-[9px] font-black text-white uppercase">#00FF55</span>
             </div>
             <button onclick="toggleFavorites()" id="favToggleBtn" class="btn-toggle px-8 py-2 rounded-xl text-[10px] uppercase">Ulubione</button>
-            <button onclick="fetchData()" id="refreshBtn" class="btn-refresh px-8 py-2 rounded-xl text-[10px] uppercase">Odśwież</button>
+            <button onclick="forceRefresh()" id="refreshBtn" class="btn-refresh px-8 py-2 rounded-xl text-[10px] uppercase">Odśwież</button>
         </div>
 
         <div class="max-w-xl w-full mb-8">
@@ -83,7 +85,7 @@
     </div>
 
     <script>
-        const srv = '8rml8v'; 
+        const srv = '8rml8v'; // ID GrandRP
         let players = [], favorites = JSON.parse(localStorage.getItem('przmx_favs')) || [], onlyFavs = false;
 
         function getHist() { 
@@ -107,6 +109,7 @@
             render();
         }
 
+        // Nowa logika pobierania: Sekwencyjna (Jeden po drugim, żeby nie mieszać danych)
         async function fetchData() {
             const btn = document.getElementById('refreshBtn');
             const indicator = document.getElementById('loadingIndicator');
@@ -114,40 +117,52 @@
             
             btn.style.opacity = '0.5';
             indicator.style.opacity = '1';
-            statusText.innerText = "SKANOWANIE...";
-
+            
+            // Unikalny timestamp żeby ominąć cache
+            const t = Date.now();
             const url = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
             
-            // CodeTabs jest często najszybszy. CorsProxy jako backup.
-            const endpoints = [
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+            // Lista proxy w kolejności od najbardziej stabilnego
+            const proxies = [
                 `https://api.corsproxy.io/?url=${encodeURIComponent(url)}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${t}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
             ];
 
-            const fetchWithTimeout = (u, ms) => {
-                const controller = new AbortController();
-                const promise = fetch(u, { signal: controller.signal });
-                const timeout = new Promise((_, reject) => setTimeout(() => { controller.abort(); reject(new Error("Timeout")); }, ms));
-                return Promise.race([promise, timeout]);
-            };
+            let success = false;
 
-            try {
-                // Wyścig z timeoutem 2.5 sekundy. Jak jeden nie zdąży, bierze inny.
-                const response = await Promise.any(endpoints.map(e => fetchWithTimeout(e, 2500).then(r => r.json())));
-                
-                if (response?.Data?.players) {
-                    processData(response.Data.players);
-                    statusText.innerText = "ONLINE:";
+            for (const proxy of proxies) {
+                try {
+                    console.log("Próba: " + proxy);
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 5000); // 5s na proxy
+                    
+                    const res = await fetch(proxy, { signal: controller.signal });
+                    clearTimeout(timeout);
+                    
+                    if(!res.ok) throw new Error("Status: " + res.status);
+                    
+                    const data = await res.json();
+                    
+                    if (data?.Data?.players) {
+                        processData(data.Data.players);
+                        statusText.innerText = "ONLINE:";
+                        statusText.style.color = "white";
+                        success = true;
+                        break; // Mamy dane, przerywamy pętlę
+                    }
+                } catch (e) {
+                    console.log("Błąd proxy, próbuje następnego...");
                 }
-            } catch (e) {
-                console.log("Network lag, showing cached data");
-                statusText.innerText = "OFFLINE MODE";
-                statusText.style.color = "#ef4444";
-            } finally {
-                btn.style.opacity = '1';
-                indicator.style.opacity = '0';
             }
+
+            if (!success) {
+                statusText.innerText = "OFFLINE / BŁĄD";
+                statusText.style.color = "#ef4444";
+            }
+            
+            btn.style.opacity = '1';
+            indicator.style.opacity = '0';
         }
 
         function processData(data) {
@@ -155,6 +170,7 @@
             hist = getHist();
             const currentNames = data.map(p => p.name);
 
+            // Aktualizacja tylko obecnych
             data.forEach(p => {
                 if (!hist[p.name]) {
                     hist[p.name] = { ids: [p.id], online: true, firstSeen: now, lastSeen: now };
@@ -166,11 +182,13 @@
                 }
             });
 
+            // Oznaczanie offline
             Object.keys(hist).forEach(name => {
                 if (!currentNames.includes(name)) hist[name].online = false;
             });
 
             localStorage.setItem(`hist_${srv}`, JSON.stringify(hist));
+            // WAŻNE: Lista 'players' to teraz TYLKO osoby online pobrane z serwera
             players = data.sort((a,b) => a.id - b.id);
             render();
         }
@@ -181,15 +199,30 @@
             container.innerHTML = "";
             const isGoat = (n) => ['przmx','kejcpi','razees'].some(g => n.toLowerCase().includes(g));
 
-            const source = val.length > 0 ? Object.keys(hist) : players.map(p => p.name);
+            // Jeśli szukamy: przeszukujemy historię. Jeśli nie: pokazujemy tylko obecną listę graczy.
+            let source = [];
+            
+            if (val.length > 0) {
+                 source = Object.keys(hist);
+            } else {
+                 // Pokazujemy tylko tych co są online (z tablicy players) + ulubione nawet jak offline
+                 const onlineNames = players.map(p => p.name);
+                 const favOffline = favorites.filter(f => !onlineNames.includes(f));
+                 source = [...onlineNames, ...favOffline];
+            }
+
+            // Licznik pokazuje TYLKO faktyczną liczbę osób online teraz
+            document.getElementById('count').innerText = players.length;
 
             source.forEach(name => {
                 const h = hist[name]; if(!h) return;
-                const id = h.online ? (players.find(p => p.name === name)?.id || h.ids.slice(-1)[0]) : h.ids.slice(-1)[0];
                 
+                // Filtrowanie wyszukiwania
+                const id = h.online ? (players.find(p => p.name === name)?.id || h.ids.slice(-1)[0]) : h.ids.slice(-1)[0];
                 if (val && !name.toLowerCase().includes(val) && !id.toString().includes(val)) return;
+                
+                // Filtrowanie ulubionych
                 if (onlyFavs && !favorites.includes(name)) return;
-                if (!val && !h.online && !onlyFavs) return;
 
                 const card = document.createElement('div');
                 card.className = `neo-card p-4 rounded-xl flex items-center justify-between ${!h.online ? 'offline' : ''}`;
@@ -210,7 +243,6 @@
                     <div class="text-3xl font-black italic shrink-0" style="color: ${statusColor}">${id}</div>`;
                 container.appendChild(card);
             });
-            document.getElementById('count').innerText = players.length;
         }
 
         function openModal(n) {
@@ -227,6 +259,7 @@
             
             document.getElementById('modalSession').innerText = isOnline ? `${sessionMins} min` : "-";
             document.getElementById('modalLastSeen').innerText = lastSeenTime;
+            
             document.getElementById('modalLogs').innerText = h.ids.join(' → ');
             document.getElementById('overlay').style.display = 'flex';
         }
@@ -234,17 +267,21 @@
         function closeModal() { document.getElementById('overlay').style.display = 'none'; }
         function toggleFav(n) { const i = favorites.indexOf(n); i === -1 ? favorites.push(n) : favorites.splice(i,1); localStorage.setItem('przmx_favs', JSON.stringify(favorites)); render(); }
         function toggleFavorites() { onlyFavs = !onlyFavs; document.getElementById('favToggleBtn').classList.toggle('active', onlyFavs); render(); }
+        
+        function forceRefresh() {
+             fetchData();
+        }
 
         document.getElementById('search').oninput = render;
         
         window.onload = () => {
             const saved = localStorage.getItem('przmx_color') || '#00FF55';
             updateAccentColor(saved);
-            render(); 
-            fetchData();
+            render(); // Renderuje najpierw z pamięci
+            fetchData(); // Potem pobiera nowe
         };
         
-        setInterval(fetchData, 20000);
+        setInterval(fetchData, 25000);
     </script>
 </body>
 </html>
