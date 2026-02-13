@@ -11,20 +11,14 @@
         body { background-color: #050608; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
         
         .bg-space { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #0a0c18 0%, #050608 100%); z-index: -2; }
-        .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--accent-glow) 1px, transparent 1px), linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px); background-size: 60px 60px; transform: perspective(500px) rotateX(60deg) translateY(-100px); transform-origin: top; opacity: 0.25; animation: moveGrid 20s linear infinite; z-index: -1; }
+        .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--accent-glow) 1px, transparent 1px), linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px); background-size: 60px 60px; transform: perspective(500px) rotateX(60deg) translateY(-100px); transform-origin: top; opacity: 0.25; animation: moveGrid 20s linear infinite; z-index: -1; transition: 0.3s; }
         @keyframes moveGrid { 0% { background-position: 0 0; } 100% { background-position: 0 600px; } }
-        .stars { position: fixed; inset: 0; background-image: radial-gradient(white 1px, transparent 1px); background-size: 100px 100px; opacity: 0.15; z-index: -1; animation: twinkle 5s infinite; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.2; } }
+        
+        .glow-title { text-shadow: 0 0 50px var(--accent-color); font-style: italic; transition: 0.3s; }
 
-        .glow-title { text-shadow: 0 0 50px var(--accent-color); font-style: italic; }
-
-        /* PRZYWRÓCONY DESIGN KAFELKÓW */
-        .neo-card { background: rgba(13, 15, 20, 0.75); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent-color); backdrop-filter: blur(25px); transition: 0.3s; cursor: pointer; }
+        .neo-card { background: rgba(13, 15, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent-color); backdrop-filter: blur(25px); transition: 0.3s; cursor: pointer; }
         .neo-card.offline { border-left-color: #ef4444 !important; opacity: 0.4; filter: grayscale(0.8); }
         .neo-card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 15px 30px -10px var(--accent-color); }
-
-        /* LICZNIK ONLINE Z OBRAMÓWKĄ */
-        .online-box { border: 2px solid var(--accent-color); border-radius: 999px; padding: 10px 30px; background: rgba(0,0,0,0.5); box-shadow: 0 0 20px var(--accent-glow); }
 
         .btn-toggle { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); transition: 0.4s ease; height: 50px; color: rgba(255,255,255,0.5); }
         .btn-toggle.active { background: var(--accent-color) !important; color: white !important; border-color: white !important; box-shadow: 0 0 35px var(--accent-color); font-weight: 900; }
@@ -37,7 +31,7 @@
     </style>
 </head>
 <body class="py-16 px-6">
-    <div class="bg-space"></div><div class="bg-grid"></div><div class="stars"></div>
+    <div class="bg-space"></div><div class="bg-grid"></div>
 
     <div id="overlay" onclick="closeModal()">
         <div class="modal-box text-center" onclick="event.stopPropagation()">
@@ -72,7 +66,7 @@
                 <input type="text" id="search" placeholder="WPISZ ID LUB NICK..." class="w-full bg-transparent py-8 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter text-center">
             </div>
             <div class="flex justify-center">
-                <div class="online-box">
+                <div class="border-2 rounded-full px-8 py-2" style="border-color: var(--accent-color)">
                     <span class="text-[11px] font-black uppercase tracking-[0.5em] text-white/30">ONLINE: <span id="count" style="color: var(--accent-color)">0</span></span>
                 </div>
             </div>
@@ -83,7 +77,14 @@
 
     <script>
         let currentSrv = '8rml8v'; let onlinePlayers = []; let favorites = JSON.parse(localStorage.getItem('przmx_favs')) || [];
-        let showOnlyFavs = false; let controller = new AbortController();
+        let showOnlyFavs = false; 
+
+        // Lista proxy dla stabilnego wczytywania
+        const proxies = [
+            "https://api.corsproxy.io/?url=",
+            "https://api.allorigins.win/raw?url=",
+            "https://cors-anywhere.herokuapp.com/"
+        ];
 
         function checkDailyReset(srv) {
             const today = new Date().toLocaleDateString();
@@ -103,25 +104,37 @@
         }
 
         async function fetchData() {
-            controller.abort(); controller = new AbortController();
-            const proxy = "https://api.corsproxy.io/?url=";
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentSrv}`;
-            try {
-                const response = await fetch(`${proxy}${encodeURIComponent(target)}`, { signal: controller.signal });
-                const d = await response.json();
-                if (d?.Data?.players) {
-                    const now = new Date().getTime();
-                    playerHistory = checkDailyReset(currentSrv);
-                    const currentNames = d.Data.players.map(p => p.name);
-                    d.Data.players.forEach(p => {
-                        if (!playerHistory[p.name]) playerHistory[p.name] = { firstSeen: now, lastSeen: now, idHistory: [p.id], isOnline: true };
-                        else { playerHistory[p.name].lastSeen = now; playerHistory[p.name].isOnline = true; if (!playerHistory[p.name].idHistory.includes(p.id)) playerHistory[p.name].idHistory.push(p.id); }
-                    });
-                    Object.keys(playerHistory).forEach(name => { if (!currentNames.includes(name)) playerHistory[name].isOnline = false; });
-                    localStorage.setItem(`hist_${currentSrv}`, JSON.stringify(playerHistory));
-                    onlinePlayers = d.Data.players.sort((a, b) => a.id - b.id); renderList();
-                }
-            } catch (e) { if (e.name !== 'AbortError') console.log("Refresh..."); }
+            let success = false;
+
+            for (let proxy of proxies) {
+                if (success) break;
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 5000); // 5 sekundy na odpowiedź
+
+                    const response = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`, { signal: controller.signal });
+                    clearTimeout(timeout);
+                    const d = await response.json();
+                    
+                    if (d?.Data?.players) {
+                        const now = new Date().getTime();
+                        playerHistory = checkDailyReset(currentSrv);
+                        const currentNames = d.Data.players.map(p => p.name);
+                        
+                        d.Data.players.forEach(p => {
+                            if (!playerHistory[p.name]) playerHistory[p.name] = { firstSeen: now, lastSeen: now, idHistory: [p.id], isOnline: true };
+                            else { playerHistory[p.name].lastSeen = now; playerHistory[p.name].isOnline = true; if (!playerHistory[p.name].idHistory.includes(p.id)) playerHistory[p.name].idHistory.push(p.id); }
+                        });
+                        
+                        Object.keys(playerHistory).forEach(name => { if (!currentNames.includes(name)) playerHistory[name].isOnline = false; });
+                        localStorage.setItem(`hist_${currentSrv}`, JSON.stringify(playerHistory));
+                        onlinePlayers = d.Data.players.sort((a, b) => a.id - b.id);
+                        renderList();
+                        success = true;
+                    }
+                } catch (e) { console.log(`Proxy ${proxy} failed, trying next...`); }
+            }
         }
 
         function renderList() {
@@ -165,7 +178,7 @@
             const duration = Math.round(((isOnline ? now : h.lastSeen) - h.firstSeen) / 60000);
             document.getElementById('modalName').innerText = name;
             document.getElementById('modalStatus').innerText = isOnline ? "ONLINE" : "OFFLINE";
-            document.getElementById('modalStatus').style.color = isOnline ? "#22c55e" : "#ef4444";
+            document.getElementById('modalStatus').style.color = isOnline ? "#00FF55" : "#ef4444";
             document.getElementById('modalLogs').innerText = `HISTORIA ID: ${h.idHistory.join(' → ')}`;
             document.getElementById('overlay').style.display = 'flex';
         }
@@ -177,7 +190,7 @@
 
         document.getElementById('search').oninput = renderList;
         const savedColor = localStorage.getItem('przmx_color'); if(savedColor) updateAccentColor(savedColor);
-        fetchData(); setInterval(fetchData, 30000);
+        fetchData(); setInterval(fetchData, 20000);
     </script>
 </body>
 </html>
