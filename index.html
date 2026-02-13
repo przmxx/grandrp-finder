@@ -5,92 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GrandRP Tracker | by PRZMX</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent-color: #00FF55; }
-        body { background: #050608; color: #fff; font-family: sans-serif; min-height: 100vh; margin: 0; }
-        .neo-card { background: #0d0f12; border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
-        .cwela-label { color: rgba(255, 255, 255, 0.15); font-size: 8px; font-weight: 900; text-transform: uppercase; }
-        .id-num { color: var(--accent-color); font-weight: 900; font-size: 1.8rem; font-style: italic; }
+        :root { --accent-color: #00FF55; --accent-glow: rgba(0, 255, 85, 0.4); }
+        body { background: #050608; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
+        .bg-space { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #0a0c18 0%, #050608 100%); z-index: -2; }
+        .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--accent-glow) 1px, transparent 1px), linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px); background-size: 60px 60px; transform: perspective(500px) rotateX(60deg) translateY(-100px); opacity: 0.2; animation: moveGrid 20s linear infinite; z-index: -1; }
+        @keyframes moveGrid { 0% { background-position: 0 0; } 100% { background-position: 0 600px; } }
+        .glow-title { text-shadow: 0 0 50px var(--accent-color); font-style: italic; }
+        .neo-card { background: rgba(13, 15, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent-color); backdrop-filter: blur(20px); padding: 20px; border-radius: 15px; margin-bottom: 12px; transition: 0.3s; cursor: pointer; }
+        .neo-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px -10px var(--accent-color); }
+        .cwela-label { color: rgba(255, 255, 255, 0.1); font-weight: 900; font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; }
+        .id-num { color: var(--accent-color); font-weight: 900; font-size: 2.2rem; font-style: italic; }
+        .btn-main { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
+        .btn-main:active { background: var(--accent-color); color: #000; }
     </style>
 </head>
-<body class="p-6">
+<body class="py-10 px-6">
+    <div class="bg-space"></div><div class="bg-grid"></div>
 
-    <div class="max-w-2xl mx-auto text-center">
-        <h1 class="text-5xl font-black italic mb-2 uppercase">GRANDRP <span style="color: var(--accent-color)">TRACKER</span></h1>
-        <p class="text-[10px] tracking-[0.5em] text-white/20 mb-10">by PRZMX</p>
+    <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-6xl md:text-8xl font-black uppercase glow-title leading-tight mb-2 tracking-tighter">GRANDRP <span style="color: var(--accent-color)">TRACKER</span></h1>
+        <p class="text-[10px] font-black tracking-[0.8em] text-white/20 uppercase mb-10">by PRZMX</p>
         
-        <div class="flex justify-center gap-4 mb-8">
-            <button onclick="fetchData()" class="bg-white/5 border border-white/10 px-8 py-3 rounded-xl font-black uppercase text-xs active:bg-green-500 transition-all">ODŚWIEŻ</button>
+        <div class="flex justify-center gap-4 mb-4">
+            <button onclick="fetchData()" class="btn-main px-12 py-4 rounded-2xl font-black uppercase text-xs tracking-widest">ODŚWEŻ DANE</button>
         </div>
-        
-        <div id="debug" class="text-[10px] text-yellow-500 mb-6 font-mono uppercase">Status: Oczekiwanie...</div>
+        <div id="debug" class="text-[9px] font-mono uppercase text-yellow-500 mb-10 tracking-widest">Inicjalizacja...</div>
 
-        <input type="text" id="search" placeholder="WPISZ ID LUB NICK..." oninput="render()" class="w-full bg-white/5 border-b-2 border-green-500 p-5 text-center text-2xl font-black outline-none mb-6">
+        <input type="text" id="search" placeholder="WPISZ ID LUB NICK..." oninput="render()" class="w-full bg-black/40 border-b-4 border-white/5 p-8 text-center text-3xl font-black outline-none mb-10 focus:border-green-500 transition-all">
 
-        <div class="mb-4 text-xs font-black text-white/30 uppercase tracking-widest">Online: <span id="count" class="text-green-500">0</span></div>
-        <div id="player-list" class="grid grid-cols-1 gap-3 text-left"></div>
+        <div class="mb-6 flex justify-center">
+            <div class="border-2 border-white/5 rounded-full px-10 py-3 bg-black/50">
+                <span class="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">ONLINE: <span id="count" style="color: var(--accent-color)">0</span></span>
+            </div>
+        </div>
+
+        <div id="list" class="grid grid-cols-1 gap-4 text-left"></div>
     </div>
 
     <script>
         let players = [];
-        const srv = '8rml8v';
+        const srvId = '8rml8v';
 
         async function fetchData() {
             const dbg = document.getElementById('debug');
-            dbg.innerText = "Status: Próba połączenia...";
+            dbg.innerText = "Skanowanie Cfx.re...";
             
-            // Najbardziej stabilna bramka dla FiveM
-            const target = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
-            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}&cache=${Date.now()}`;
+            // Hybrydowy system pobierania przez endpoint join
+            const url = `https://servers-frontend.fivem.net/api/servers/single/${srvId}`;
+            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`;
 
             try {
                 const res = await fetch(proxy);
-                if (!res.ok) throw new Error("Blokada Proxy");
+                if (!res.ok) throw new Error("API Offline");
                 
                 const data = await res.json();
                 if (data?.Data?.players) {
                     players = data.Data.players.sort((a,b) => a.id - b.id);
-                    dbg.innerText = "Status: Połączono pomyślnie";
+                    dbg.innerText = "Status: Połączono z GrandRP";
                     dbg.style.color = "#00FF55";
                     render();
                 } else {
-                    dbg.innerText = "Status: Serwer zwrócił puste dane";
+                    dbg.innerText = "Status: Cfx.re nie zwróciło listy graczy";
                 }
             } catch (e) {
-                dbg.innerText = "Status: Błąd sieci (CORS/TIMEOUT)";
+                dbg.innerText = "Błąd: Brak odpowiedzi z sektora Cfx.re";
                 dbg.style.color = "#ef4444";
-                console.error(e);
             }
         }
 
         function render() {
             const val = document.getElementById('search').value.toLowerCase();
-            const container = document.getElementById('player-list');
+            const container = document.getElementById('list');
             container.innerHTML = "";
             
-            const filtered = players.filter(p => 
-                p.name.toLowerCase().includes(val) || p.id.toString().includes(val)
-            );
+            const isGoat = (n) => ['przmx','kejcpi','razees'].some(g => n.toLowerCase().includes(g));
+            const filtered = players.filter(p => p.name.toLowerCase().includes(val) || p.id.toString().includes(val));
 
             document.getElementById('count').innerText = players.length;
 
             filtered.forEach(p => {
+                const goat = isGoat(p.name);
                 const card = document.createElement('div');
                 card.className = "neo-card flex justify-between items-center";
                 card.innerHTML = `
-                    <div>
-                        <div class="cwela-label">NICK CWELA</div>
-                        <div class="font-bold text-lg">${p.name}</div>
+                    <div class="min-w-0 pr-4">
+                        <div class="cwela-label" style="color: ${goat ? '#fff' : 'rgba(255,255,255,0.1)'}">${goat ? "NICK GOAT'A" : "NICK CWELA"}</div>
+                        <div class="text-xl font-bold truncate ${goat ? 'underline text-white' : 'text-slate-300'}">${p.name}</div>
                     </div>
-                    <div class="id-num">${p.id}</div>
+                    <div class="id-num" style="color: ${goat ? '#fff' : 'var(--accent-color)'}">${p.id}</div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // Start
         fetchData();
-        setInterval(fetchData, 30000);
+        setInterval(fetchData, 20000);
     </script>
 </body>
 </html>
