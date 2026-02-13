@@ -180,18 +180,14 @@
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentSrv}`;
             try {
                 const r = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`);
-                if (!r.ok) throw new Error("Network response was not ok");
                 const d = await r.json();
                 
                 if (d && d.Data && d.Data.players) {
                     allPlayers = d.Data.players.sort((a, b) => a.id - b.id);
                     renderList(allPlayers);
-                } else {
-                    throw new Error("Invalid data format");
                 }
             } catch (e) {
                 console.error("Fetch error:", e);
-                // Próba ponownego pobrania przy błędzie
                 setTimeout(fetchData, 5000);
             }
         }
@@ -205,16 +201,26 @@
                 return;
             }
 
-            container.innerHTML = list.map(p => `
-                <div class="neo-card p-7 rounded-3xl relative group overflow-hidden">
-                    <div class="flex flex-col relative z-10 text-left">
-                        <span class="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1 leading-none">ID GOATA</span>
-                        <span class="text-4xl font-black text-white mb-5 leading-none italic">${p.id}</span>
-                        <div class="h-[4px] w-8 mb-5 transition-all group-hover:w-full" style="background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color)"></div>
-                        <span class="text-[11px] font-bold text-slate-400 uppercase truncate tracking-tighter">${p.name}</span>
+            container.innerHTML = list.map(p => {
+                // LOGIKA DLA GOATÓW
+                const isGoat = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
+                const label = isGoat ? 'ID GOATA' : 'ID CWELA';
+                
+                return `
+                    <div class="neo-card p-7 rounded-3xl relative group overflow-hidden">
+                        <div class="flex flex-col relative z-10 text-left">
+                            <span class="text-[8px] font-black ${isGoat ? 'text-white' : 'text-white/20'} uppercase tracking-widest mb-1 leading-none">
+                                ${label}
+                            </span>
+                            <span class="text-4xl font-black text-white mb-5 leading-none italic">${p.id}</span>
+                            <div class="h-[4px] w-8 mb-5 transition-all group-hover:w-full" style="background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color)"></div>
+                            <span class="text-[11px] font-bold ${isGoat ? 'text-white' : 'text-slate-400'} uppercase truncate tracking-tighter">
+                                ${p.name}
+                            </span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function handleServerChange(val) {
@@ -233,7 +239,6 @@
             fetchData();
         }
 
-        // Inicjalizacja kolorów
         const savedColor = localStorage.getItem('przmx_tracker_final_color');
         if (savedColor) {
             updateAccentColor(savedColor);
