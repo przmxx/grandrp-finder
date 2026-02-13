@@ -11,21 +11,20 @@
         body { background: #050608; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
         .bg-space { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #0a0c18 0%, #050608 100%); z-index: -2; }
         .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) translateY(-100px); opacity: 0.15; z-index: -1; transition: 0.5s; }
-        .glow-title { text-shadow: 0 0 40px var(--accent); transition: 0.3s; }
+        .glow-title { text-shadow: 0 0 40px var(--accent); transition: 0.3s; font-style: italic; }
         
-        /* PRZYWRÓCONY DESIGN KAFELKA 1:1 */
-        .neo-card { background: rgba(13, 15, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent); padding: 20px; border-radius: 15px; margin-bottom: 4px; transition: 0.3s; cursor: pointer; }
-        .neo-card.offline { border-left-color: #ef4444 !important; opacity: 0.35; }
-        .cwela-label { color: rgba(255, 255, 255, 0.15); font-weight: 900; font-size: 8px; text-transform: uppercase; letter-spacing: 0.2em; }
-        .id-num { color: var(--accent); font-weight: 900; font-size: 2.2rem; font-style: italic; transition: 0.3s; }
+        /* PRZYWRÓCONY DESIGN KAFELKA */
+        .neo-card { background: rgba(13, 15, 20, 0.9); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 12px; transition: 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .neo-card.offline { border-left-color: #ef4444 !important; opacity: 0.4; }
+        .cwela-label { color: rgba(255, 255, 255, 0.15); font-weight: 900; font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 2px; }
+        .id-num { color: var(--accent); font-weight: 900; font-size: 2rem; font-style: italic; transition: 0.3s; line-height: 1; }
         
-        .btn-toggle { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); height: 45px; color: rgba(255,255,255,0.5); font-weight: 700; transition: 0.4s; }
-        .btn-toggle.active { background: var(--accent) !important; color: #000 !important; border-color: white !important; box-shadow: 0 0 35px var(--accent); font-weight: 900; }
-        .fav-star { transition: 0.2s; color: rgba(255,255,255,0.05); width: 18px; cursor: pointer; }
-        .fav-star.active { color: #FFD700; filter: drop-shadow(0 0 8px #FFD700); }
+        .btn-action { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); height: 42px; color: rgba(255,255,255,0.6); font-weight: 700; transition: 0.3s; display: flex; align-items: center; justify-content: center; padding: 0 20px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
+        .btn-action.active { background: var(--accent) !important; color: #000 !important; border-color: white !important; box-shadow: 0 0 25px var(--accent); }
+        .picker-container { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); border-radius: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
         
-        #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(25px); z-index: 100; align-items: center; justify-content: center; }
-        .modal-box { background: rgba(15, 17, 22, 0.95); border: 1px solid var(--accent); max-width: 450px; width: 90%; border-radius: 28px; padding: 35px; }
+        #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 100; align-items: center; justify-content: center; }
+        .modal-box { background: #0d0f14; border: 1px solid var(--accent); max-width: 400px; width: 90%; border-radius: 24px; padding: 30px; }
     </style>
 </head>
 <body class="py-10 px-6">
@@ -33,58 +32,60 @@
 
     <div id="overlay" onclick="closeModal()">
         <div class="modal-box text-center" onclick="event.stopPropagation()">
-            <h2 id="modalName" class="text-3xl font-black italic uppercase mb-2">---</h2>
+            <h2 id="modalName" class="text-3xl font-black italic uppercase mb-2 text-white">---</h2>
             <div id="modalStatus" class="font-bold mb-6 uppercase text-xl">---</div>
             <div class="grid grid-cols-2 gap-4 mb-6 text-left">
-                <div class="bg-white/5 p-3 rounded border border-white/5">
-                    <span class="text-[9px] text-white/30 uppercase block font-bold">Sesja</span>
+                <div class="bg-white/5 p-3 rounded-lg border border-white/5">
+                    <span class="text-[9px] text-white/40 uppercase block font-bold">Sesja</span>
                     <span id="modalSession" class="text-lg font-black text-white">---</span>
                 </div>
-                <div class="bg-white/5 p-3 rounded border border-white/5 text-right">
-                    <span class="text-[9px] text-white/30 uppercase block font-bold">Ostatnio</span>
+                <div class="bg-white/5 p-3 rounded-lg border border-white/5 text-right">
+                    <span class="text-[9px] text-white/40 uppercase block font-bold">Ostatnio</span>
                     <span id="modalLastSeen" class="text-lg font-black text-white">---</span>
                 </div>
             </div>
-            <div id="modalLogs" class="bg-white/5 p-4 rounded text-[10px] font-mono text-blue-300 break-all border border-white/5"></div>
+            <div id="modalLogs" class="bg-white/5 p-4 rounded-lg text-[10px] font-mono text-blue-400 break-all border border-white/5"></div>
             <button onclick="closeModal()" class="mt-8 w-full py-4 rounded-xl border border-white/10 font-bold uppercase hover:bg-white hover:text-black transition-all">Zamknij</button>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-6xl md:text-8xl font-black uppercase glow-title leading-tight mb-2 tracking-tighter">GRANDRP <span style="color: var(--accent)">TRACKER</span></h1>
-        <p class="text-[10px] font-black tracking-[0.8em] text-white/20 uppercase mb-10">by PRZMX</p>
+    <div class="max-w-5xl mx-auto flex flex-col items-center">
+        <div class="text-center mb-10">
+            <h1 class="text-6xl md:text-8xl font-black uppercase glow-title leading-tight tracking-tighter">GRANDRP <span style="color: var(--accent)">TRACKER</span></h1>
+            <p class="text-[10px] font-black tracking-[0.8em] text-white/20 uppercase mt-2">by PRZMX</p>
+        </div>
         
         <div class="flex flex-wrap justify-center gap-4 mb-10">
-            <div class="flex items-center gap-3 px-5 py-2 rounded-xl bg-black/60 border border-white/10" style="border-color: var(--accent)">
+            <div class="picker-container">
                 <input type="color" id="picker" oninput="updateAccent(this.value)" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer">
                 <span id="hexLabel" class="text-[10px] font-black text-white uppercase">#00FF55</span>
             </div>
-            <button onclick="toggleFavorites()" id="favToggleBtn" class="btn-toggle px-8 py-2 rounded-xl text-[10px] uppercase">Ulubione</button>
-            <button onclick="fetchData()" class="bg-white/5 border border-white/10 px-8 py-2 rounded-xl font-black uppercase text-[10px] tracking-widest active:bg-white active:text-black transition-all">ODŚWIEŻ</button>
+            <button onclick="toggleFavorites()" id="favToggleBtn" class="btn-action">Ulubione</button>
+            <button onclick="fetchData()" class="btn-action" style="background: rgba(255,255,255,0.08); color: white;">ODŚWIEŻ</button>
         </div>
 
-        <div class="w-full max-w-xl mx-auto mb-10">
-            <input type="text" id="search" placeholder="WPISZ ID LUB NICK..." oninput="render()" class="w-full bg-black/40 border-b-2 py-6 text-center text-3xl font-black outline-none transition-all" style="border-bottom-color: var(--accent)">
-            <div id="status" class="text-[9px] font-mono uppercase text-yellow-500 mt-4 tracking-widest">Skanowanie sektora...</div>
+        <div class="w-full max-w-xl mb-8">
+            <input type="text" id="search" placeholder="SZUKAJ..." oninput="render()" class="w-full bg-black/30 border-b-2 py-5 text-center text-3xl font-black outline-none transition-all" style="border-color: var(--accent)">
+            <div id="status" class="text-center mt-4 uppercase text-[10px] font-black text-white/20 tracking-widest">Inicjalizacja systemu...</div>
         </div>
 
         <div class="mb-10 flex justify-center">
-            <div class="border-2 rounded-full px-10 py-3 bg-black/50" style="border-color: var(--accent)">
-                <span class="text-[10px] font-black uppercase text-white/30 tracking-widest">ONLINE: <span id="count" style="color: var(--accent)">0</span></span>
+            <div class="border-2 rounded-full px-10 py-2 bg-black/40" style="border-color: var(--accent)">
+                <span class="text-[10px] font-black uppercase text-white/40 tracking-widest">ONLINE: <span id="count" style="color: var(--accent)">0</span></span>
             </div>
         </div>
 
-        <div id="list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left w-full"></div>
+        <div id="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full"></div>
     </div>
 
     <script>
+        const srv = '8rml8v';
         let players = [], favorites = JSON.parse(localStorage.getItem('przmx_favs')) || [], onlyFavs = false;
-        const srvId = '8rml8v';
 
         function updateAccent(hex) {
             document.documentElement.style.setProperty('--accent', hex);
-            const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
-            document.documentElement.style.setProperty('--glow', `rgba(${r}, ${g}, ${b}, 0.3)`);
+            const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+            document.documentElement.style.setProperty('--glow', `rgba(${r},${g},${b},0.4)`);
             document.getElementById('hexLabel').innerText = hex.toUpperCase();
             document.getElementById('picker').value = hex;
             localStorage.setItem('przmx_color', hex);
@@ -93,66 +94,69 @@
 
         async function fetchData() {
             const status = document.getElementById('status');
-            const url = `https://servers-frontend.fivem.net/api/servers/single/${srvId}`;
+            status.innerText = "POBIERANIE DANYCH...";
+            const url = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
             
-            // System wyścigu proxy - 4 endpointy naraz
-            const proxies = [
-                `https://api.corsproxy.io/?url=${encodeURIComponent(url)}`,
+            const endpoints = [
                 `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-                `https://proxy.cors.sh/${url}`
+                `https://api.corsproxy.io/?url=${encodeURIComponent(url)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
             ];
 
             try {
-                const res = await Promise.any(proxies.map(p => fetch(p).then(r => r.json())));
-                if (d = res) {
+                // Wyścig proxy - pierwszy wygrywa
+                const res = await Promise.any(endpoints.map(e => fetch(e).then(r => r.json())));
+                if (res?.Data?.players) {
                     const now = Date.now();
-                    let hist = JSON.parse(localStorage.getItem(`hist_${srvId}`)) || {};
-                    const currentNames = d.Data.players.map(p => p.name);
+                    let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
+                    const names = res.Data.players.map(p => p.name);
                     
-                    d.Data.players.forEach(p => {
-                        if (!hist[p.name]) hist[p.name] = { ids: [p.id], online: true, firstSeen: now, lastSeen: now };
+                    res.Data.players.forEach(p => {
+                        if (!hist[p.name]) hist[p.name] = { ids: [p.id], online: true, start: now, last: now };
                         else { 
-                            if (!hist[p.name].online) hist[p.name].firstSeen = now;
-                            hist[p.name].online = true; hist[p.name].lastSeen = now;
+                            if (!hist[p.name].online) hist[p.name].start = now;
+                            hist[p.name].online = true; hist[p.name].last = now;
                             if (!hist[p.name].ids.includes(p.id)) hist[p.name].ids.push(p.id);
                         }
                     });
                     
-                    Object.keys(hist).forEach(n => { if (!currentNames.includes(n)) hist[n].online = false; });
-                    localStorage.setItem(`hist_${srvId}`, JSON.stringify(hist));
-                    players = d.Data.players.sort((a,b) => a.id - b.id);
-                    status.innerText = "POŁĄCZONO"; status.style.color = "#00FF55";
+                    Object.keys(hist).forEach(n => { if (!names.includes(n)) hist[n].online = false; });
+                    localStorage.setItem(`hist_${srv}`, JSON.stringify(hist));
+                    players = res.Data.players.sort((a,b) => a.id - b.id);
+                    status.innerText = "SYNCHRONIZACJA ZAKOŃCZONA";
+                    status.style.color = "var(--accent)";
                     render();
                 }
-            } catch (e) { status.innerText = "BŁĄD SIECI"; status.style.color = "#ef4444"; }
+            } catch (e) { status.innerText = "BŁĄD POŁĄCZENIA"; status.style.color = "#ef4444"; }
         }
 
         function render() {
             const val = document.getElementById('search').value.toLowerCase();
-            const container = document.getElementById('list'); container.innerHTML = "";
-            let hist = JSON.parse(localStorage.getItem(`hist_${srvId}`)) || {};
+            const container = document.getElementById('list'); 
+            container.innerHTML = "";
+            let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
             const isGoat = (n) => ['przmx','kejcpi','razees'].some(g => n.toLowerCase().includes(g));
 
             const source = val.length > 0 ? Object.keys(hist) : players.map(p => p.name);
             source.forEach(name => {
                 const h = hist[name]; if(!h) return;
                 const id = h.online ? (players.find(p => p.name === name)?.id || h.ids.slice(-1)[0]) : h.ids.slice(-1)[0];
+                
                 if (val && !name.toLowerCase().includes(val) && !id.toString().includes(val)) return;
                 if (onlyFavs && !favorites.includes(name)) return;
                 if (!val && !h.online && !onlyFavs) return;
 
                 const goat = isGoat(name);
                 const div = document.createElement('div');
-                div.className = `neo-card flex justify-between items-center ${!h.online ? 'offline' : ''}`;
+                div.className = `neo-card ${!h.online ? 'offline' : ''}`;
                 div.onclick = () => openModal(name);
                 div.innerHTML = `
                     <div class="min-w-0 pr-4">
+                        <span class="cwela-label" style="color: ${goat ? '#fff' : 'rgba(255,255,255,0.15)'}">${goat ? "NICK GOAT'A" : "NICK CWELA"}</span>
                         <div class="flex items-center gap-2">
-                            <span class="cwela-label" style="color: ${goat ? '#fff' : 'rgba(255,255,255,0.1)'}">${goat ? "NICK GOAT'A" : "NICK CWELA"}</span>
                             <span onclick="event.stopPropagation(); toggleFav('${name}')" class="fav-star ${favorites.includes(name) ? 'active' : ''}">★</span>
+                            <div class="text-base font-bold truncate ${goat ? 'underline text-white' : 'text-slate-300'}">${name}</div>
                         </div>
-                        <div class="text-lg font-bold truncate ${goat ? 'underline text-white' : 'text-slate-300'}">${name}</div>
                     </div>
                     <div class="id-num" style="color: ${h.online ? (goat ? '#fff' : 'var(--accent)') : '#ef4444'}">${id}</div>
                 `;
@@ -162,13 +166,13 @@
         }
 
         function openModal(n) {
-            let hist = JSON.parse(localStorage.getItem(`hist_${srvId}`)) || {};
+            let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
             const h = hist[n]; const now = Date.now();
             document.getElementById('modalName').innerText = n;
             document.getElementById('modalStatus').innerText = h.online ? "ONLINE" : "OFFLINE";
             document.getElementById('modalStatus').style.color = h.online ? "var(--accent)" : "#ef4444";
-            document.getElementById('modalSession').innerText = h.online ? `${Math.floor((now - h.firstSeen) / 60000)} min` : "-";
-            document.getElementById('modalLastSeen').innerText = new Date(h.lastSeen).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('modalSession').innerText = h.online ? `${Math.floor((now - h.start) / 60000)} min` : "-";
+            document.getElementById('modalLastSeen').innerText = new Date(h.last).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             document.getElementById('modalLogs').innerText = `HISTORIA ID: ${h.ids.join(' → ')}`;
             document.getElementById('overlay').style.display = 'flex';
         }
@@ -178,7 +182,7 @@
         function toggleFavorites() { onlyFavs = !onlyFavs; document.getElementById('favToggleBtn').classList.toggle('active', onlyFavs); render(); }
 
         window.onload = () => { updateAccent(localStorage.getItem('przmx_color') || '#00FF55'); fetchData(); };
-        setInterval(fetchData, 25000);
+        setInterval(fetchData, 20000);
     </script>
 </body>
 </html>
