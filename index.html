@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Neo Dashboard</title>
+    <title>GrandRP Finder | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -50,7 +50,7 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        #picker {
+        input[type="color"] {
             -webkit-appearance: none;
             border: none;
             width: 30px;
@@ -59,24 +59,39 @@
             cursor: pointer;
             background: none;
         }
-        #picker::-webkit-color-swatch { border-radius: 4px; border: 1px solid white; }
+        input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: 1px solid white; }
+
+        .custom-id-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body class="py-10 px-6">
 
-    <div class="max-w-6xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col xl:flex-row justify-between items-center gap-8 mb-16">
             <h1 class="text-5xl font-extrabold tracking-tighter italic uppercase glow-title leading-none">
                 GRANDRP <span style="color: var(--accent-color)">FINDER</span>
             </h1>
 
-            <div class="nav-panel flex items-center gap-6 px-6 py-3 rounded-2xl">
+            <div class="nav-panel flex flex-wrap items-center justify-center gap-6 px-6 py-4 rounded-2xl">
                 <div class="flex gap-2">
-                    <button onclick="changeSrv('8rml8v', this)" class="srv-tab active text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500 transition-all">Sektor 1</button>
-                    <button onclick="changeSrv('dyrx5y', this)" class="srv-tab text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500 transition-all">Sektor 2</button>
+                    <button onclick="changeSrv('8rml8v', this)" class="srv-tab active text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500 transition-all">GrandRP</button>
+                    <button onclick="changeSrv('dyrx5y', this)" class="srv-tab text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500 transition-all">BetterSide RP</button>
                 </div>
+
+                <div class="flex items-center gap-2 border-l border-white/10 pl-6">
+                    <input type="text" id="customSrvId" placeholder="JOIN ID..." class="custom-id-input px-3 py-2 rounded-lg outline-none w-24 focus:border-orange-500 transition-all">
+                    <button onclick="useCustomId()" class="p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-all">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </button>
+                </div>
+
                 <div class="flex items-center gap-3 border-l border-white/10 pl-6">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/40">Kolor</span>
                     <input type="color" id="picker" value="#f97316" oninput="applyTheme(this.value)">
                 </div>
             </div>
@@ -89,12 +104,12 @@
             </div>
             <div class="mt-4 text-center">
                 <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">
-                    Aktywne obiekty w sektorze: <span id="count" class="text-lg italic font-extrabold" style="color: var(--accent-color)">0</span>
+                    Skanowany sektor: <span id="currentIdDisplay" class="text-white">8RML8V</span> | Aktywnych: <span id="count" class="text-lg italic font-extrabold" style="color: var(--accent-color)">0</span>
                 </span>
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left">
+        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 text-left">
             </div>
     </div>
 
@@ -110,17 +125,19 @@
         }
 
         async function fetchData() {
+            document.getElementById('currentIdDisplay').innerText = currentSrv.toUpperCase();
             const proxy = "https://api.allorigins.win/raw?url=";
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentSrv}`;
             try {
                 const r = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`);
                 const d = await r.json();
                 if (d?.Data?.players) {
-                    // SORTOWANIE OD NAJNIŻSZEGO ID
                     allData = d.Data.players.sort((a, b) => a.id - b.id);
                     render(allData);
                 }
-            } catch (e) { console.log("Próba odświeżenia..."); }
+            } catch (e) {
+                document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 text-red-500 font-bold uppercase">Błąd: Serwer nie istnieje lub API FiveM padło</div>';
+            }
         }
 
         function render(list) {
@@ -133,12 +150,12 @@
             }
 
             container.innerHTML = list.map(p => `
-                <div class="neo-card p-6 rounded-xl relative group">
+                <div class="neo-card p-5 rounded-xl relative group">
                     <div class="flex flex-col">
-                        <span class="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1 leading-none">ID CWELA</span>
-                        <span class="text-4xl font-black text-white mb-4 leading-none">${p.id}</span>
+                        <span class="text-[7px] font-black text-white/20 uppercase tracking-widest mb-1 leading-none">ID CWELA</span>
+                        <span class="text-3xl font-black text-white mb-3 leading-none italic">${p.id}</span>
                         <div class="h-[2px] w-4 transition-all group-hover:w-full" style="background: var(--accent-color)"></div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase truncate mt-4">${p.name}</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase truncate mt-3">${p.name}</span>
                     </div>
                 </div>
             `).join('');
@@ -146,16 +163,25 @@
 
         function changeSrv(id, btn) {
             document.querySelectorAll('.srv-tab').forEach(t => {
-                t.classList.remove('active');
                 t.style.borderColor = 'rgba(255,255,255,0.05)';
+                t.classList.remove('active');
             });
-            btn.classList.add('active');
-            btn.style.borderColor = 'var(--accent-color)';
+            if(btn) {
+                btn.style.borderColor = 'var(--accent-color)';
+                btn.classList.add('active');
+            }
             currentSrv = id;
             fetchData();
         }
 
-        // Załaduj motyw
+        function useCustomId() {
+            const input = document.getElementById('customSrvId');
+            const val = input.value.trim().toLowerCase();
+            if(val.length > 3) {
+                changeSrv(val, null);
+            }
+        }
+
         const saved = localStorage.getItem('grand_theme_v2');
         if (saved) {
             applyTheme(saved);
@@ -169,6 +195,11 @@
             const val = e.target.value.toLowerCase();
             render(allData.filter(p => p.name.toLowerCase().includes(val) || p.id.toString().includes(val)));
         };
+
+        // Obsługa Enter w wyszukiwarce ID
+        document.getElementById('customSrvId').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') useCustomId();
+        });
     </script>
 </body>
 </html>
