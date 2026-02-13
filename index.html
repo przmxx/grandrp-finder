@@ -124,7 +124,6 @@
             statusText.innerText = "SKANOWANIE...";
 
             const url = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
-            // Agresywne proxy z timestampem żeby nie brało z cache
             const endpoints = [
                 `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`,
                 `https://api.corsproxy.io/?url=${encodeURIComponent(url)}`
@@ -162,7 +161,7 @@
                 if (!hist[p.name]) {
                     hist[p.name] = { ids: [p.id], online: true, firstSeen: now, lastSeen: now };
                 } else {
-                    if (!hist[p.name].online) hist[p.name].firstSeen = now; // Nowa sesja
+                    if (!hist[p.name].online) hist[p.name].firstSeen = now; 
                     hist[p.name].online = true;
                     hist[p.name].lastSeen = now;
                     if (!hist[p.name].ids.includes(p.id)) hist[p.name].ids.push(p.id);
@@ -225,7 +224,6 @@
             document.getElementById('modalStatus').innerText = isOnline ? "ONLINE" : "OFFLINE";
             document.getElementById('modalStatus').style.color = isOnline ? "var(--accent-color)" : "#ef4444";
             
-            // Logika czasu
             const sessionMins = isOnline ? Math.floor((now - (h.firstSeen || now)) / 60000) : 0;
             const lastSeenTime = new Date(h.lastSeen || now).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
