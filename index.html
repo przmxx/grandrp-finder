@@ -51,25 +51,30 @@
             color: var(--accent-color);
         }
 
+        /* Nowy, bardziej estetyczny kafelek */
         .neo-card {
-            background: rgba(13, 15, 18, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-left: 4px solid var(--accent-color);
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(13, 15, 18, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent-color);
+            backdrop-filter: blur(10px);
+            transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .neo-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 15px 35px -10px var(--accent-glow);
-            background: rgba(22, 25, 30, 1);
+            transform: scale(1.02);
+            background: rgba(20, 23, 28, 0.9);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px -10px var(--accent-glow);
         }
 
         .server-select {
             background: rgba(15, 17, 20, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 12px 24px;
-            border-radius: 14px;
+            padding: 10px 20px;
+            border-radius: 12px;
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
@@ -80,30 +85,30 @@
         .search-container {
             background: #0d0f12;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 5px solid var(--accent-color);
+            border-bottom: 4px solid var(--accent-color);
         }
 
         .color-module {
             background: rgba(15, 17, 20, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 16px;
+            padding: 8px 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             backdrop-filter: blur(10px);
         }
 
         input[type="color"] {
             -webkit-appearance: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
             cursor: pointer;
             background: none;
             border: none;
         }
-        input[type="color"]::-webkit-color-swatch { border-radius: 8px; border: 2px solid white; }
+        input[type="color"]::-webkit-color-swatch { border-radius: 6px; border: 1px solid white; }
     </style>
 </head>
 <body class="py-16 px-6">
@@ -153,8 +158,8 @@
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-            <div class="col-span-full py-20 text-center opacity-30 italic">TRWA POBIERANIE DANYCH...</div>
+        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full px-4">
+            <div class="col-span-full py-20 text-center opacity-30 italic uppercase tracking-widest">Inicjalizacja systemu...</div>
         </div>
     </div>
 
@@ -193,27 +198,29 @@
             const container = document.getElementById('player-list');
             
             if (list.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-32 opacity-10 uppercase font-black italic tracking-[1em]">BRAK OBIEKTÓW</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-32 opacity-10 uppercase font-black italic tracking-[1em]">BRAK SYGNAŁU</div>';
                 return;
             }
 
             container.innerHTML = list.map(p => {
                 const isGoat = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
-                const label = isGoat ? 'ID GOATA' : 'ID CWELA';
+                const label = isGoat ? 'GOAT' : 'CWEL';
                 
                 return `
-                    <div class="neo-card p-6 rounded-2xl flex flex-col justify-between group overflow-hidden text-left relative">
-                        <div class="z-10">
-                            <span class="text-[9px] font-black ${isGoat ? 'text-white' : 'text-white/30'} uppercase tracking-[0.2em] block mb-2">
+                    <div class="neo-card p-5 rounded-xl flex items-center justify-between group">
+                        <div class="flex flex-col gap-1 min-w-0">
+                            <span class="text-[9px] font-black ${isGoat ? 'text-white' : 'text-white/30'} uppercase tracking-[0.2em]">
                                 ${label}
                             </span>
-                            <h3 class="text-2xl font-bold ${isGoat ? 'text-white' : 'text-slate-200'} truncate uppercase tracking-tight mb-4">
+                            <h3 class="text-lg font-bold ${isGoat ? 'text-white' : 'text-slate-200'} truncate pr-2">
                                 ${p.name}
                             </h3>
                         </div>
-                        <div class="flex items-end justify-between z-10">
-                            <div class="h-[3px] w-12 rounded-full transition-all group-hover:w-20" style="background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color)"></div>
-                            <span class="text-4xl font-black italic text-white opacity-90">${p.id}</span>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[8px] font-bold opacity-20 uppercase">UID</span>
+                            <span class="text-2xl font-black italic leading-none" style="color: ${isGoat ? '#fff' : 'var(--accent-color)'}">
+                                ${p.id}
+                            </span>
                         </div>
                     </div>
                 `;
