@@ -36,6 +36,21 @@
         .search-container { background: rgba(13, 15, 18, 0.9); border: 1px solid rgba(255, 255, 255, 0.05); border-bottom: 5px solid var(--accent-color); }
         .fav-star { transition: 0.2s; color: rgba(255,255,255,0.1); width: 22px; height: 22px; cursor: pointer; }
         .fav-star.active { color: #FFD700; filter: drop-shadow(0 0 5px #FFD700); }
+
+        /* Poprawiony styl przycisku Ulubione */
+        .btn-toggle { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            transition: all 0.3s ease; 
+        }
+        .btn-toggle.active { 
+            background: var(--accent-color) !important; 
+            border-color: white !important; 
+            color: white !important; 
+            font-weight: 900; 
+            box-shadow: 0 0 20px var(--accent-glow);
+            opacity: 1 !important;
+        }
     </style>
 </head>
 <body class="py-16 px-6">
@@ -75,7 +90,7 @@
                 <input type="color" id="picker" value="#0055FF" oninput="updateAccentColor(this.value)" class="w-8 h-8 rounded-lg bg-transparent border-none cursor-pointer">
                 <span id="hexLabel" class="text-[10px] font-bold text-white/40 uppercase">#0055FF</span>
             </div>
-            <button onclick="toggleFavorites()" id="favToggleBtn" class="bg-black/40 px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest text-white/50 border border-white/10">Ulubione</button>
+            <button onclick="toggleFavorites()" id="favToggleBtn" class="btn-toggle px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest text-white/50 border border-white/10">Ulubione</button>
         </div>
 
         <div class="max-w-3xl w-full mb-16">
@@ -136,12 +151,10 @@
                             if (!playerHistory[p.name].idHistory.includes(p.id)) playerHistory[p.name].idHistory.push(p.id);
                         }
                     });
-                    
                     const currentNames = d.Data.players.map(p => p.name);
                     Object.keys(playerHistory).forEach(name => {
                         if (!currentNames.includes(name)) playerHistory[name].isOnline = false;
                     });
-
                     localStorage.setItem('przmx_history', JSON.stringify(playerHistory));
                     onlinePlayers = d.Data.players.sort((a, b) => a.id - b.id);
                     renderList();
@@ -163,7 +176,6 @@
                     const id = isOnline ? (onlinePlayers.find(op => op.name === name)?.id || h.idHistory[h.idHistory.length-1]) : h.idHistory[h.idHistory.length-1];
                     const isFav = favorites.includes(name);
                     if (showOnlyFavs && !isFav) return;
-
                     const card = document.createElement('div');
                     card.className = `neo-card p-6 rounded-2xl flex items-center justify-between group ${!isOnline ? 'offline' : ''}`;
                     card.onclick = () => openModal(name);
@@ -224,15 +236,15 @@
         
         function toggleFav(n) {
             const index = favorites.indexOf(n);
-            if (index === -1) favorites.push(n);
-            else favorites.splice(index, 1);
+            index === -1 ? favorites.push(n) : favorites.splice(index, 1);
             localStorage.setItem('przmx_favs', JSON.stringify(favorites));
             renderList();
         }
 
         function toggleFavorites() {
             showOnlyFavs = !showOnlyFavs;
-            document.getElementById('favToggleBtn').classList.toggle('border-white', showOnlyFavs);
+            const btn = document.getElementById('favToggleBtn');
+            btn.classList.toggle('active', showOnlyFavs);
             renderList();
         }
 
