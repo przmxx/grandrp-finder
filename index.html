@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Multi-Server Tracker - Pro Modal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <title>GrandRP Tracker by Przmx</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --main: #0088ff; 
@@ -19,19 +19,17 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
+        /* --- TŁO --- */
         .visual-effects {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.1), transparent 50%);
         }
-
         .aurora {
             position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(circle at 50% 50%, var(--main), transparent 40%);
             opacity: 0.05; filter: blur(100px); animation: drift 20s infinite linear;
         }
-
         @keyframes drift { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
         .bg-grid { 
             position: absolute; top: 0; width: 100%; height: 100%; 
             background: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), 
@@ -40,68 +38,77 @@
             transform-origin: center top; mask-image: linear-gradient(to bottom, black, transparent);
         }
 
-        .header { margin-top: 50px; text-align: center; }
-        .header h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(30px, 6vw, 55px); margin: 0; text-shadow: 0 0 30px var(--main); font-style: italic; text-transform: uppercase; }
-        .header span { color: var(--main); }
+        /* --- NOWY DESIGN NAGŁÓWKA --- */
+        .header { margin-top: 60px; text-align: center; position: relative; }
+        .header h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: clamp(35px, 8vw, 70px); 
+            font-weight: 900; margin: 0; 
+            text-transform: uppercase;
+            font-style: italic;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--main);
+            filter: drop-shadow(0 0 15px var(--main));
+            letter-spacing: -2px;
+            line-height: 0.9;
+        }
+        .header h1 span {
+            color: var(--main);
+            -webkit-text-stroke: 0;
+            text-shadow: 0 0 30px var(--main);
+        }
+        .author-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 5px;
+            color: #fff;
+            opacity: 0.6;
+            margin-top: 10px;
+            text-transform: uppercase;
+            display: block;
+        }
+        .author-tag b { color: var(--main); text-shadow: 0 0 10px var(--main); }
 
-        .server-selector { display: flex; gap: 10px; margin-top: 25px; justify-content: center; flex-wrap: wrap; }
+        /* --- SERWERY I NAWIGACJA --- */
+        .server-selector { display: flex; gap: 10px; margin-top: 30px; justify-content: center; }
         .custom-input-box {
             margin-top: 20px; display: flex; gap: 10px; max-height: 0; opacity: 0; overflow: hidden;
-            transition: all 0.4s ease; background: rgba(255,255,255,0.02); border-radius: 15px;
+            transition: all 0.4s ease; background: var(--glass); border-radius: 15px;
         }
         .custom-input-box.visible { max-height: 100px; opacity: 1; padding: 15px 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .small-input { background: rgba(0,0,0,0.5); border: 1px solid var(--main); color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron'; text-align: center; font-size: 14px; outline: none; }
+        .small-input { background: rgba(0,0,0,0.5); border: 1px solid var(--main); color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron'; text-align: center; outline: none; }
 
-        .nav-bar { display: flex; align-items: center; gap: 15px; margin: 30px 0; background: var(--glass); padding: 12px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav-bar { display: flex; align-items: center; gap: 15px; margin: 30px 0; background: var(--glass); padding: 12px 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); }
         .btn { background: transparent; border: 1px solid transparent; color: #666; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: 700; text-transform: uppercase; font-size: 12px; transition: 0.3s; }
         .btn.active { background: rgba(255,255,255,0.05); color: #fff; border-color: var(--main); box-shadow: 0 0 20px var(--main); }
-        .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; text-shadow: 0 0 10px var(--main); }
+        .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; }
 
         .search-input { width: 90%; max-width: 750px; background: transparent; border: none; border-bottom: 2px solid var(--main); padding: 15px; color: #fff; font-size: 32px; text-align: center; outline: none; font-family: 'Orbitron', sans-serif; letter-spacing: 6px; }
-        .status-bar { margin: 25px 0; font-weight: 700; color: var(--main); letter-spacing: 4px; font-size: 14px; }
 
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 25px; width: 94%; max-width: 1400px; padding-bottom: 80px; }
-
-        /* Karta Gracza */
+        /* --- KARTA GRACZA --- */
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 25px; width: 94%; max-width: 1400px; padding-bottom: 80px; margin-top: 30px;}
         .player-card { 
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); 
             border: 1px solid rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; 
             position: relative; transition: all 0.3s; backdrop-filter: blur(15px); cursor: pointer;
         }
-        .player-card:hover { transform: translateY(-5px); border-color: var(--main); background: rgba(255,255,255,0.05); }
-
+        .player-card:hover { transform: translateY(-5px); border-color: var(--main); }
         .label { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; color: #000; text-transform: uppercase; }
         .label-cwela { background: var(--main); }
         .label-goat { background: var(--goat-color); box-shadow: 0 0 15px var(--goat-color); }
-        
         .name { font-size: 20px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75%; display: block; }
         .id-val { position: absolute; bottom: 25px; right: 25px; color: var(--main); font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; opacity: 0.8; }
-        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); z-index: 5; }
+        .star-fav { position: absolute; top: 25px; right: 25px; cursor: pointer; font-size: 22px; color: rgba(255,255,255,0.05); }
         .star-fav.is-active { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
-        /* --- MODAL (ŚRODEK EKRANU) --- */
-        #modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content {
-            background: linear-gradient(145deg, #111, #050505);
-            border: 2px solid var(--main); border-radius: 30px;
-            padding: 40px; width: 90%; max-width: 500px;
-            box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 20px var(--main);
-            position: relative; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        /* --- MODAL --- */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #080808; border: 2px solid var(--main); border-radius: 30px; padding: 40px; width: 90%; max-width: 500px; box-shadow: 0 0 40px var(--main); position: relative; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .modal-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; }
-        .modal-name { font-size: 32px; font-family: 'Orbitron'; font-weight: 900; text-align: center; color: #fff; margin-bottom: 10px; }
-        
+        .modal-name { font-size: 32px; font-family: 'Orbitron'; font-weight: 900; text-align: center; margin-bottom: 25px; }
         .detail-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .detail-label { color: var(--main); font-weight: bold; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-        .detail-value { font-family: 'Orbitron'; font-size: 16px; color: #fff; }
-        
-        .modal-footer { margin-top: 30px; text-align: center; color: #444; font-size: 11px; text-transform: uppercase; }
+        .detail-label { color: var(--main); font-weight: bold; text-transform: uppercase; font-size: 12px; }
+        .detail-value { font-family: 'Orbitron'; color: #fff; }
 
         .color-selector { width: 38px; height: 38px; border-radius: 12px; border: 2px solid #fff; position: relative; overflow: hidden; cursor: pointer; }
         #colorPicker { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; }
@@ -112,38 +119,27 @@
     
     <div id="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <div id="modal-label" class="label"></div>
-                <div id="modal-name" class="modal-name"></div>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Czas sesji:</span>
-                <span id="modal-time" class="detail-value"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Historia ID (24h):</span>
-                <span id="modal-ids" class="detail-value" style="font-size: 14px;"></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Aktualne ID:</span>
-                <span id="modal-current-id" class="detail-value" style="color: var(--main);"></span>
-            </div>
-            <div class="modal-footer">
-                Kliknij obok, ESC lub dowolny klawisz, aby zamknąć
-            </div>
+            <div style="text-align: center;"><div id="modal-label" class="label"></div></div>
+            <div id="modal-name" class="modal-name"></div>
+            <div class="detail-row"><span class="detail-label">Czas sesji:</span><span id="modal-time" class="detail-value"></span></div>
+            <div class="detail-row"><span class="detail-label">Historia ID (24h):</span><span id="modal-ids" class="detail-value"></span></div>
+            <div class="detail-row"><span class="detail-label">Status:</span><span style="color:var(--main)">ONLINE</span></div>
+            <div style="margin-top: 30px; text-align: center; opacity: 0.3; font-size: 10px;">ESC LUB KLIKNIJ OBOK, ABY ZAMKNĄĆ</div>
         </div>
     </div>
 
     <div class="header">
-        <h1 id="main-title">TRACKER</h1>
+        <h1>GRANDRP <span>TRACKER</span></h1>
+        <span class="author-tag">SYSTEM OPERACYJNY BY <b>PRZMX</b></span>
+        
         <div class="server-selector">
             <button class="btn btn-server" id="srv-8rml8v" onclick="selectServer('8rml8v', 'GRANDRP')">GRANDRP</button>
             <button class="btn btn-server" id="srv-dyrx5y" onclick="selectServer('dyrx5y', 'BETTERSIDE')">BETTERSIDE</button>
             <button class="btn btn-server" id="srv-custom" onclick="toggleCustomPanel()">WŁASNY</button>
         </div>
         <div class="custom-input-box" id="c-box">
-            <input type="text" id="c-input" class="small-input" placeholder="KOD">
-            <button class="btn" onclick="applyCustom()" style="border: 1px solid var(--main); padding: 5px 15px;">OK</button>
+            <input type="text" id="c-input" class="small-input" placeholder="KOD SERWERA">
+            <button class="btn" onclick="applyCustom()" style="border: 1px solid var(--main);">OK</button>
         </div>
     </div>
     
@@ -154,14 +150,14 @@
         <div class="color-selector" id="t-prev"><input type="color" id="colorPicker"></div>
     </div>
 
-    <input type="text" id="sInput" class="search-input" placeholder="WYSZUKAJ..." oninput="draw()">
-    <div class="status-bar">ONLINE: <span id="oCount">0</span></div>
+    <input type="text" id="sInput" class="search-input" placeholder="WYSZUKAJ CWELA..." oninput="draw()">
+    <div style="margin-top: 20px; font-weight: bold; color: var(--main); letter-spacing: 5px;">ONLINE: <span id="oCount">0</span></div>
+    
     <div id="results"></div>
 
     <script>
         let currentServerCode = localStorage.getItem('last_srv_code') || '8rml8v';
         let currentServerName = localStorage.getItem('last_srv_name') || 'GRANDRP';
-        let customCodeStored = localStorage.getItem('user_custom_code') || '';
         let savedColor = localStorage.getItem('user_theme_color') || '#0088ff';
         
         const proxy = "https://corsproxy.io/?";
@@ -185,33 +181,27 @@
             const label = document.getElementById('modal-label');
             label.innerText = isG ? "NICK GOAT'A" : "NICK CWELA";
             label.className = `label ${isG ? 'label-goat' : 'label-cwela'}`;
-            
             document.getElementById('modal-name').innerText = p.name;
             document.getElementById('modal-time').innerText = getSessionTime(p.name);
             document.getElementById('modal-ids').innerText = sessionData[p.name]?.ids.join(', ') || p.id;
-            document.getElementById('modal-current-id').innerText = '#' + p.id;
-            
             document.getElementById('modal-overlay').style.display = 'flex';
         }
 
         function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
-        
-        window.addEventListener('keydown', (e) => { if (document.getElementById('modal-overlay').style.display === 'flex') closeModal(); });
+        window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
         function getSessionTime(nick) {
             if (!sessionData[nick]) return "0m";
             const diffMs = Date.now() - sessionData[nick].firstSeen;
             const mins = Math.floor(diffMs / 60000);
-            const hrs = Math.floor(mins / 60);
-            return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
+            return mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins}m`;
         }
 
         function updateSessionInfo(currentPlayers) {
             const now = Date.now();
             currentPlayers.forEach(p => {
-                if (!sessionData[p.name]) {
-                    sessionData[p.name] = { firstSeen: now, ids: [p.id], lastSeen: now };
-                } else {
+                if (!sessionData[p.name]) sessionData[p.name] = { firstSeen: now, ids: [p.id], lastSeen: now };
+                else {
                     sessionData[p.name].lastSeen = now;
                     if (!sessionData[p.name].ids.includes(p.id)) sessionData[p.name].ids.push(p.id);
                 }
@@ -223,7 +213,7 @@
         function selectServer(code, name) { document.getElementById('c-box').classList.remove('visible'); switchServer(code, name); }
         function applyCustom() {
             const val = document.getElementById('c-input').value.trim().toLowerCase();
-            if(val) { localStorage.setItem('user_custom_code', val); switchServer(val, 'CUSTOM'); document.getElementById('c-box').classList.remove('visible'); }
+            if(val) { switchServer(val, 'CUSTOM'); document.getElementById('c-box').classList.remove('visible'); }
         }
 
         function switchServer(code, name) {
@@ -244,7 +234,7 @@
                 document.getElementById('oCount').innerText = players.length;
                 updateSessionInfo(players);
                 draw();
-            } catch (err) { document.getElementById('oCount').innerText = "BŁĄD"; }
+            } catch (err) { document.getElementById('oCount').innerText = "OFFLINE"; }
         }
 
         function toggleFav(e, n) {
@@ -266,7 +256,6 @@
             const res = document.getElementById('results');
             let list = players.filter(p => p.name.toLowerCase().includes(s) || p.id.toString().includes(s));
             if (filter === 'fav') list = list.filter(p => favs.includes(p.name));
-
             res.innerHTML = list.map(p => {
                 const isG = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
                 return `
