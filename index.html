@@ -3,173 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Tracker | by PRZMX</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>GrandRP Tracker</title>
     <style>
-        :root { --accent: #04026E; --glow: rgba(4, 2, 110, 0.4); }
-        body { background: #050608; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
-        .bg-space { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #0a0c18 0%, #050608 100%); z-index: -2; }
-        .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) translateY(-100px); opacity: 0.15; z-index: -1; transition: 0.5s; }
-        .glow-title { text-shadow: 0 0 45px var(--accent); font-style: italic; transition: 0.3s; }
-        .neo-card { background: rgba(13, 15, 20, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 12px; transition: 0.2s; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .neo-card.offline { border-left-color: #ef4444 !important; opacity: 0.35; }
-        .cwela-label { color: rgba(255, 255, 255, 0.15); font-weight: 900; font-size: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
-        .id-num { color: var(--accent); font-weight: 900; font-size: 2.2rem; font-style: italic; transition: 0.3s; }
-        .btn-action { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); height: 45px; color: rgba(255,255,255,0.6); font-weight: 700; transition: 0.3s; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
-        .btn-action.active { background: var(--accent) !important; color: #fff !important; box-shadow: 0 0 25px var(--accent); border-color: white; }
-        .picker-box { background: rgba(0,0,0,0.6); border: 1px solid var(--accent); border-radius: 12px; padding: 6px 15px; display: flex; align-items: center; gap: 10px; }
-        #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(25px); z-index: 100; align-items: center; justify-content: center; }
+        :root {
+            --neon-green: #00ff88;
+            --dark-bg: #050505;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Tło z siatką 3D */
+        .background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: center top;
+            z-index: -1;
+            mask-image: linear-gradient(to bottom, transparent, black);
+        }
+
+        .header {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 64px;
+            font-style: italic;
+            font-weight: 900;
+            margin: 0;
+            color: #fff;
+            text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green);
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+        .header span {
+            color: var(--neon-green);
+        }
+
+        .top-nav {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #aaa;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-transform: uppercase;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-btn.active {
+            border-color: var(--neon-green);
+            color: white;
+        }
+
+        .search-container {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .search-box {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--neon-green);
+            padding: 15px;
+            color: white;
+            font-size: 32px;
+            text-align: center;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .online-status {
+            margin-top: 40px;
+            border: 2px solid var(--neon-green);
+            border-radius: 50px;
+            padding: 10px 40px;
+            color: var(--neon-green);
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+
+        #results {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            width: 90%;
+            max-width: 1000px;
+            padding-bottom: 50px;
+        }
+
+        .player-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            padding: 15px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .player-id { color: var(--neon-green); font-weight: bold; }
     </style>
 </head>
-<body class="py-10 px-6">
-    <div class="bg-space"></div><div class="bg-grid" id="grid"></div>
+<body>
 
-    <div id="overlay" onclick="closeModal()">
-        <div class="bg-[#0d0f14] border border-[var(--accent)] max-w-[400px] w-[90%] rounded-[24px] p-[30px] text-center" onclick="event.stopPropagation()">
-            <h2 id="modalName" class="text-3xl font-black italic uppercase mb-2">---</h2>
-            <div id="modalStatus" class="font-bold mb-6 uppercase text-xl">---</div>
-            <div id="modalLogs" class="bg-white/5 p-4 rounded-lg text-[10px] font-mono text-blue-400 break-all"></div>
-            <button onclick="closeModal()" class="mt-8 w-full py-4 rounded-xl border border-white/10 font-bold uppercase hover:bg-white hover:text-black transition-all">Zamknij</button>
-        </div>
+    <div class="background-grid"></div>
+
+    <div class="header">
+        <h1>GRANDRP <span>TRACKER</span></h1>
+        <div style="font-size: 8px; opacity: 0.4; letter-spacing: 4px;">BY PRZMX</div>
     </div>
 
-    <div class="max-w-5xl mx-auto flex flex-col items-center">
-        <div class="text-center mb-10">
-            <h1 class="text-6xl md:text-8xl font-black uppercase glow-title leading-tight tracking-tighter" id="titleHeader">GRANDRP <span id="spanTracker" style="color: var(--accent)">TRACKER</span></h1>
-            <p class="text-[10px] font-black tracking-[0.8em] text-white/20 uppercase mt-2">by PRZMX</p>
-        </div>
-        
-        <div class="flex flex-wrap justify-center gap-4 mb-10">
-            <div class="picker-box" id="pickerContainer">
-                <input type="color" id="picker" oninput="updateAccent(this.value)" class="w-6 h-6 rounded bg-transparent border-none cursor-pointer">
-                <span id="hexLabel" class="text-[10px] font-black uppercase text-white">#04026E</span>
-            </div>
-            <button onclick="toggleFavorites()" id="favToggleBtn" class="btn-action px-8">Ulubione</button>
-            <button onclick="fetchData()" id="refreshBtn" class="btn-action px-8" style="background: rgba(255,255,255,0.1); color: white;">ODŚWIEŻ</button>
-        </div>
-
-        <div class="w-full max-w-xl mb-8">
-            <input type="text" id="search" placeholder="SZUKAJ..." oninput="render()" class="w-full bg-black/30 border-b-2 py-5 text-center text-3xl font-black outline-none transition-all" style="border-color: var(--accent)">
-            <div id="status" class="text-center mt-4 uppercase text-[10px] font-black text-white/20 tracking-widest">Skanowanie...</div>
-        </div>
-
-        <div class="mb-10 flex justify-center">
-            <div id="countContainer" class="border-2 rounded-full px-10 py-2 bg-black/40" style="border-color: var(--accent)">
-                <span class="text-[10px] font-black uppercase text-white/40 tracking-widest">ONLINE: <span id="count" style="color: var(--accent)">0</span></span>
-            </div>
-        </div>
-
-        <div id="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full"></div>
+    <div class="top-nav">
+        <button class="nav-btn active">#00FF88</button>
+        <button class="nav-btn">ULUBIONE</button>
+        <button class="nav-btn">ODŚWIEŻ</button>
     </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="SZUKAJ..." oninput="filterPlayers()">
+        <div style="font-size: 10px; color: #444; margin-top: 10px;">SKANOWANIE...</div>
+    </div>
+
+    <div class="online-status">
+        ONLINE: <span id="onlineCount">0</span>
+    </div>
+
+    <div id="results"></div>
 
     <script>
-        const srv = '8rml8v';
-        let players = [], favorites = JSON.parse(localStorage.getItem('przmx_favs')) || [], onlyFavs = false;
+        const serverId = "8rml8v";
+        const proxyUrl = "https://corsproxy.io/?";
+        const apiUrl = `https://servers-frontend.fivem.net/api/servers/single/${serverId}`;
+        
+        let allPlayers = [];
 
-        function updateAccent(hex) {
-            document.documentElement.style.setProperty('--accent', hex);
-            const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-            document.documentElement.style.setProperty('--glow', `rgba(${r},${g},${b},0.4)`);
-            document.getElementById('hexLabel').innerText = hex.toUpperCase();
-            document.getElementById('picker').value = hex;
-            const accentElements = [document.getElementById('spanTracker'), document.getElementById('search'), document.getElementById('countContainer'), document.getElementById('pickerContainer')];
-            accentElements.forEach(el => { if(el) el.style.borderColor = hex; if(el && el.id === 'spanTracker') el.style.color = hex; });
-            localStorage.setItem('przmx_color', hex);
-            render();
-        }
-
-        async function fetchData() {
-            const status = document.getElementById('status');
-            const btn = document.getElementById('refreshBtn');
-            status.innerText = "PRZECHWYTYWANIE...";
-            btn.style.opacity = "0.5";
-            
-            const url = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
-            const t = Date.now();
-            const proxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${t}`,
-                `https://api.corsproxy.io/?url=${encodeURIComponent(url)}&cache=${t}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-                `https://thingproxy.freeboard.io/fetch/${url}`,
-                `https://proxy.cors.sh/${url}`
-            ];
-
+        async function updateTracker() {
             try {
-                // Wyścig 5 proxy naraz - najszybszy wygrywa
-                const res = await Promise.any(proxies.map(p => fetch(p).then(r => r.json())));
-                if (res?.Data?.players) {
-                    const now = Date.now();
-                    let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
-                    const currentNames = res.Data.players.map(p => p.name);
-                    
-                    res.Data.players.forEach(p => {
-                        if (!hist[p.name]) hist[p.name] = { ids: [p.id], online: true, start: now };
-                        else { hist[p.name].online = true; if(!hist[p.name].ids.includes(p.id)) hist[p.name].ids.push(p.id); }
-                    });
-                    
-                    Object.keys(hist).forEach(n => { if (!currentNames.includes(n)) hist[n].online = false; });
-                    localStorage.setItem(`hist_${srv}`, JSON.stringify(hist));
-                    players = res.Data.players.sort((a,b) => a.id - b.id);
-                    status.innerText = "POŁĄCZONO"; status.style.color = "var(--accent)";
-                    render();
-                }
-            } catch (e) { status.innerText = "BŁĄD DANYCH - KLIKNIJ ODŚWIEŻ"; status.style.color = "#ef4444"; }
-            btn.style.opacity = "1";
+                const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                const data = await response.json();
+                allPlayers = data.Data.players;
+                
+                document.getElementById('onlineCount').innerText = allPlayers.length;
+                renderPlayers(allPlayers);
+            } catch (e) {
+                console.error("Błąd pobierania:", e);
+            }
         }
 
-        function render() {
-            const val = document.getElementById('search').value.toLowerCase();
-            const container = document.getElementById('list'); container.innerHTML = "";
-            let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
-            const isGoat = (n) => ['przmx','kejcpi','razees'].some(g => n.toLowerCase().includes(g));
-
-            const source = val.length > 0 ? Object.keys(hist) : players.map(p => p.name);
-            source.forEach(name => {
-                const h = hist[name]; if(!h) return;
-                const id = h.online ? (players.find(p => p.name === name)?.id || h.ids.slice(-1)[0]) : h.ids.slice(-1)[0];
-                if (val && !name.toLowerCase().includes(val) && !id.toString().includes(val)) return;
-                if (onlyFavs && !favorites.includes(name)) return;
-                if (!val && !h.online && !onlyFavs) return;
-
-                const goat = isGoat(name);
-                const div = document.createElement('div');
-                div.className = `neo-card ${!h.online ? 'offline' : ''}`;
-                div.onclick = () => openModal(name);
-                div.innerHTML = `
-                    <div class="min-w-0 pr-4">
-                        <span class="cwela-label" style="color: ${goat ? '#fff' : 'rgba(255,255,255,0.15)'}">${goat ? "NICK GOAT'A" : "NICK CWELA"}</span>
-                        <div class="flex items-center gap-2">
-                            <span onclick="event.stopPropagation(); toggleFav('${name}')" class="fav-star ${favorites.includes(name) ? 'active' : ''}">★</span>
-                            <div class="text-base font-bold truncate ${goat ? 'underline text-white' : 'text-slate-300'}">${name}</div>
-                        </div>
-                    </div>
-                    <div class="id-num" style="color: ${h.online ? (goat ? '#fff' : 'var(--accent)') : '#ef4444'}">${id}</div>
-                `;
-                container.appendChild(div);
-            });
-            document.getElementById('count').innerText = players.length;
+        function renderPlayers(players) {
+            const container = document.getElementById('results');
+            container.innerHTML = players.map(p => `
+                <div class="player-item">
+                    <span>${p.name}</span>
+                    <span class="player-id">ID: ${p.id}</span>
+                </div>
+            `).join('');
         }
 
-        function openModal(n) {
-            let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
-            const h = hist[n]; document.getElementById('modalName').innerText = n;
-            document.getElementById('modalStatus').innerText = h.online ? "ONLINE" : "OFFLINE";
-            document.getElementById('modalStatus').style.color = h.online ? "var(--accent)" : "#ef4444";
-            document.getElementById('modalLogs').innerText = `HISTORIA ID: ${h.ids.join(' → ')}`;
-            document.getElementById('overlay').style.display = 'flex';
+        function filterPlayers() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allPlayers.filter(p => 
+                p.name.toLowerCase().includes(term) || p.id.toString().includes(term)
+            );
+            renderPlayers(filtered);
         }
 
-        function closeModal() { document.getElementById('overlay').style.display = 'none'; }
-        function toggleFav(n) { const i = favorites.indexOf(n); i === -1 ? favorites.push(n) : favorites.splice(i,1); localStorage.setItem('przmx_favs', JSON.stringify(favorites)); render(); }
-        function toggleFavorites() { onlyFavs = !onlyFavs; document.getElementById('favToggleBtn').classList.toggle('active', onlyFavs); render(); }
-
-        window.onload = () => { 
-            const savedColor = localStorage.getItem('przmx_color') || '#04026E';
-            updateAccent(savedColor); 
-            fetchData(); 
-        };
-        setInterval(fetchData, 25000);
+        // Start
+        updateTracker();
+        setInterval(updateTracker, 60000); // Odświeżaj co minutę
     </script>
 </body>
 </html>
