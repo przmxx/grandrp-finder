@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Server Tracker</title>
+    <title>Elite Multi-Server Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -19,9 +19,10 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
+        /* --- DESIGNERSKIE TŁO --- */
         .visual-effects {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            overflow: hidden; background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.15), transparent 50%);
+            overflow: hidden; background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.1), transparent 50%);
         }
 
         .aurora {
@@ -58,14 +59,22 @@
             display: flex; gap: 10px; margin-top: 25px; justify-content: center; flex-wrap: wrap;
         }
 
+        /* --- POPRAWIONE OKNO WPISYWANIA --- */
         .custom-input-box {
-            margin-top: 15px; display: none; gap: 5px;
+            margin-top: 20px; display: flex; gap: 10px; 
+            max-height: 0; opacity: 0; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255,255,255,0.02); padding: 0 20px; border-radius: 15px;
         }
-        .custom-input-box.visible { display: flex; }
+        .custom-input-box.visible { 
+            max-height: 100px; opacity: 1; padding: 15px 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
         .small-input {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--main);
-            color: white; border-radius: 5px; padding: 5px 10px; font-family: 'Orbitron';
-            text-align: center; font-size: 12px; outline: none;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--main);
+            color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron';
+            text-align: center; font-size: 14px; outline: none; box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
         .nav-bar { 
@@ -81,7 +90,7 @@
             font-weight: 700; text-transform: uppercase; font-size: 12px; transition: 0.3s;
         }
         .btn.active { background: rgba(255,255,255,0.05); color: #fff; border-color: var(--main); box-shadow: 0 0 20px var(--main); }
-        .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; }
+        .btn-server.active { border-color: var(--main); color: var(--main); font-weight: 900; text-shadow: 0 0 10px var(--main); }
 
         .color-selector { 
             width: 38px; height: 38px; border-radius: 12px; border: 2px solid #fff; 
@@ -108,7 +117,10 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); 
             border: 1px solid rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; 
             position: relative; transition: all 0.4s; backdrop-filter: blur(15px);
+            animation: fadeIn 0.5s ease forwards;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .player-card:hover { transform: translateY(-8px); border-color: var(--main); box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
 
         .label { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 15px; color: #000; }
@@ -132,13 +144,13 @@
     <div class="header">
         <h1 id="main-title">TRACKER</h1>
         <div class="server-selector">
-            <button class="btn btn-server" id="srv-8rml8v" onclick="switchServer('8rml8v', 'GRANDRP')">GRANDRP</button>
-            <button class="btn btn-server" id="srv-dyrx5y" onclick="switchServer('dyrx5y', 'BETTERSIDE')">BETTERSIDE</button>
-            <button class="btn btn-server" id="srv-custom" onclick="showCustomInput()">WŁASNY</button>
+            <button class="btn btn-server" id="srv-8rml8v" onclick="selectServer('8rml8v', 'GRANDRP')">GRANDRP</button>
+            <button class="btn btn-server" id="srv-dyrx5y" onclick="selectServer('dyrx5y', 'BETTERSIDE')">BETTERSIDE</button>
+            <button class="btn btn-server" id="srv-custom" onclick="toggleCustomPanel()">WŁASNY</button>
         </div>
         <div class="custom-input-box" id="c-box">
-            <input type="text" id="c-input" class="small-input" placeholder="KOD SERWERA (np. abc123)">
-            <button class="btn" onclick="applyCustomServer()" style="padding: 5px 10px; font-size: 10px; border: 1px solid var(--main);">OK</button>
+            <input type="text" id="c-input" class="small-input" placeholder="KOD (np. abc123)">
+            <button class="btn" onclick="applyCustom()" style="border: 1px solid var(--main); padding: 5px 15px;">OK</button>
         </div>
     </div>
     
@@ -157,10 +169,10 @@
     <div id="results"></div>
 
     <script>
-        // --- STORAGE ---
+        // --- STORAGE & STATE ---
         let currentServerCode = localStorage.getItem('last_srv_code') || '8rml8v';
         let currentServerName = localStorage.getItem('last_srv_name') || 'GRANDRP';
-        let customCode = localStorage.getItem('user_custom_code') || '';
+        let customCodeStored = localStorage.getItem('user_custom_code') || '';
         let savedColor = localStorage.getItem('user_theme_color') || '#0088ff';
         
         const proxy = "https://corsproxy.io/?";
@@ -179,18 +191,27 @@
         const cp = document.getElementById('colorPicker');
         cp.addEventListener('input', (e) => applyColor(e.target.value));
 
-        function showCustomInput() {
+        // Toggles the custom panel
+        function toggleCustomPanel() {
             const box = document.getElementById('c-box');
             box.classList.toggle('visible');
-            if(customCode) document.getElementById('c-input').value = customCode;
+            if(customCodeStored) document.getElementById('c-input').value = customCodeStored;
         }
 
-        function applyCustomServer() {
-            const code = document.getElementById('c-input').value.trim().toLowerCase();
-            if(code) {
-                customCode = code;
-                localStorage.setItem('user_custom_code', code);
-                switchServer(code, 'CUSTOM');
+        // Logic for Grand/BetterSide buttons
+        function selectServer(code, name) {
+            // Zamknij panel własny przy wyborze stałych serwerów
+            document.getElementById('c-box').classList.remove('visible');
+            switchServer(code, name);
+        }
+
+        function applyCustom() {
+            const val = document.getElementById('c-input').value.trim().toLowerCase();
+            if(val) {
+                customCodeStored = val;
+                localStorage.setItem('user_custom_code', val);
+                switchServer(val, 'CUSTOM');
+                // Opcjonalnie: zamknij po zatwierdzeniu
                 document.getElementById('c-box').classList.remove('visible');
             }
         }
@@ -256,13 +277,18 @@
                     <div class="id-container"><span class="id-value">#${p.id}</span></div>
                 </div>`;
             });
-            res.innerHTML = html || '<div style="opacity:0.2; width:100%; text-align:center;">BRAK WYNIKÓW</div>';
+            res.innerHTML = html || '<div style="opacity:0.2; width:100%; text-align:center; padding-top:50px;">BRAK WYNIKÓW</div>';
         }
 
-        // Init
+        // --- INIT ---
         applyColor(savedColor);
-        switchServer(currentServerCode, currentServerName);
-        setInterval(fetchS, 30000);
+        // Jeśli przy starcie jesteśmy na customowym kodzie, upewnij się, że UI to pokazuje
+        if (currentServerName.startsWith('SERVER [')) {
+            switchServer(currentServerCode, 'CUSTOM');
+        } else {
+            switchServer(currentServerCode, currentServerName);
+        }
+        setInterval(fetchS, 35000);
     </script>
 </body>
 </html>
