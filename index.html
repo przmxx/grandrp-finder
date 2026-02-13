@@ -131,4 +131,34 @@
                 div.onclick = () => openModal(name);
                 div.innerHTML = `
                     <div class="min-w-0 pr-4">
-                        <span class="cwela-label" style="color: ${
+                        <span class="cwela-label" style="color: ${goat ? '#fff' : 'rgba(255,255,255,0.15)'}">${goat ? "NICK GOAT'A" : "NICK CWELA"}</span>
+                        <div class="flex items-center gap-2">
+                            <span onclick="event.stopPropagation(); toggleFav('${name}')" class="fav-star ${favorites.includes(name) ? 'active' : ''}">★</span>
+                            <div class="text-base font-bold truncate ${goat ? 'underline text-white' : 'text-slate-300'}">${name}</div>
+                        </div>
+                    </div>
+                    <div class="id-num" style="color: ${h.online ? (goat ? '#fff' : 'var(--accent)') : '#ef4444'}">${id}</div>
+                `;
+                container.appendChild(div);
+            });
+            document.getElementById('count').innerText = players.length;
+        }
+
+        function openModal(n) {
+            let hist = JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
+            const h = hist[n]; document.getElementById('modalName').innerText = n;
+            document.getElementById('modalStatus').innerText = h.online ? "ONLINE" : "OFFLINE";
+            document.getElementById('modalStatus').style.color = h.online ? "var(--accent)" : "#ef4444";
+            document.getElementById('modalLogs').innerText = `HISTORIA ID: ${h.ids.join(' → ')}`;
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('overlay').style.display = 'none'; }
+        function toggleFav(n) { const i = favorites.indexOf(n); i === -1 ? favorites.push(n) : favorites.splice(i,1); localStorage.setItem('przmx_favs', JSON.stringify(favorites)); render(); }
+        function toggleFavorites() { onlyFavs = !onlyFavs; document.getElementById('favToggleBtn').classList.toggle('active', onlyFavs); render(); }
+
+        window.onload = () => { updateAccent(localStorage.getItem('przmx_color') || '#00FF55'); fetchData(); };
+        setInterval(fetchData, 20000);
+    </script>
+</body>
+</html>
