@@ -8,52 +8,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent-color: #00FF55; --accent-glow: rgba(0, 255, 85, 0.4); }
-        
         body { background-color: #050608; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
         
         .bg-space { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #0a0c18 0%, #050608 100%); z-index: -2; }
-        
-        /* Dynamiczna siatka - teraz 100% poprawna */
-        .bg-grid { 
-            position: fixed; inset: 0; 
-            background-image: linear-gradient(var(--accent-glow) 1px, transparent 1px), linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px); 
-            background-size: 60px 60px; transform: perspective(500px) rotateX(60deg) translateY(-100px); 
-            transform-origin: top; opacity: 0.25; animation: moveGrid 20s linear infinite; z-index: -1; 
-        }
+        .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--accent-glow) 1px, transparent 1px), linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px); background-size: 60px 60px; transform: perspective(500px) rotateX(60deg) translateY(-100px); transform-origin: top; opacity: 0.25; animation: moveGrid 20s linear infinite; z-index: -1; }
         @keyframes moveGrid { 0% { background-position: 0 0; } 100% { background-position: 0 600px; } }
         
         .glow-title { text-shadow: 0 0 50px var(--accent-color); font-style: italic; }
-
-        /* Design kafelka z Twojego pierwszego screena */
         .neo-card { background: rgba(13, 15, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid var(--accent-color); backdrop-filter: blur(25px); transition: 0.3s; cursor: pointer; }
         .neo-card.offline { border-left-color: #ef4444 !important; opacity: 0.4; filter: grayscale(0.8); }
         .neo-card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 15px 30px -10px var(--accent-color); }
 
-        /* Przycisk Ulubione z GIGA GLOW */
         .btn-toggle { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); transition: 0.4s ease; height: 50px; color: rgba(255,255,255,0.5); font-weight: 700; }
-        .btn-toggle.active { 
-            background: var(--accent-color) !important; 
-            color: #000 !important; 
-            border-color: white !important; 
-            box-shadow: 0 0 40px var(--accent-color); 
-            font-weight: 900; 
-        }
+        .btn-toggle.active { background: var(--accent-color) !important; color: #000 !important; border-color: white !important; box-shadow: 0 0 40px var(--accent-color); font-weight: 900; }
 
         .fav-star { transition: 0.2s; color: rgba(255,255,255,0.1); width: 22px; height: 22px; cursor: pointer; }
         .fav-star.active { color: #FFD700; filter: drop-shadow(0 0 8px #FFD700); }
         
         #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(25px); z-index: 100; align-items: center; justify-content: center; }
         .modal-box { background: rgba(15, 17, 22, 0.95); border: 1px solid var(--accent-color); max-width: 450px; width: 90%; border-radius: 28px; padding: 35px; }
-
         .online-box { border: 2px solid var(--accent-color); border-radius: 999px; padding: 8px 30px; background: rgba(0,0,0,0.5); box-shadow: 0 0 20px var(--accent-glow); }
     </style>
 </head>
 <body class="py-16 px-6">
-    <div class="bg-space"></div><div class="bg-grid" id="mainGrid"></div>
+    <div class="bg-space"></div><div class="bg-grid"></div>
 
     <div id="overlay" onclick="closeModal()">
         <div class="modal-box text-center" onclick="event.stopPropagation()">
-            <h2 id="modalName" class="text-4xl font-black text-white italic uppercase mb-6 tracking-tighter">---</h2>
+            <h2 id="modalName" class="text-4xl font-black text-white italic uppercase mb-6">---</h2>
             <div id="modalStatus" class="text-xl font-bold mb-4">---</div>
             <div id="modalLogs" class="bg-white/5 p-4 rounded-xl text-blue-400 break-all text-xs font-mono"></div>
             <button onclick="closeModal()" class="mt-8 w-full py-4 rounded-xl border border-white/10 font-bold uppercase hover:bg-white hover:text-black transition-all">Zamknij</button>
@@ -61,7 +43,7 @@
     </div>
 
     <div class="max-w-7xl mx-auto flex flex-col items-center">
-        <h1 class="text-6xl md:text-9xl font-black uppercase glow-title leading-tight mb-14 text-center" id="mainTitle">PLAYER <span style="color: var(--accent-color)">TRACKER</span></h1>
+        <h1 class="text-6xl md:text-9xl font-black uppercase glow-title leading-tight mb-14 text-center">PLAYER <span style="color: var(--accent-color)">TRACKER</span></h1>
         
         <div class="flex flex-wrap justify-center gap-6 mb-16">
             <select id="srvSelector" onchange="handleServerChange(this.value)" class="bg-black/60 p-3 rounded-xl font-bold uppercase text-[11px] text-white border border-white/10 outline-none">
@@ -72,14 +54,15 @@
                 <span id="hexLabel" class="text-[10px] font-bold text-white/40 uppercase">#00FF55</span>
             </div>
             <button onclick="toggleFavorites()" id="favToggleBtn" class="btn-toggle px-8 py-3 rounded-xl text-[11px] uppercase tracking-widest border border-white/10">Ulubione</button>
+            <button onclick="fetchData()" class="bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-[11px] font-bold uppercase hover:bg-white/20 transition-all">Odśwież</button>
         </div>
 
         <div class="max-w-3xl w-full mb-16">
-            <div class="p-2 rounded-3xl shadow-2xl mb-8 bg-black/40 border-b-2" style="border-color: var(--accent-color)" id="searchBox">
+            <div class="p-2 rounded-3xl shadow-2xl mb-8 bg-black/40 border-b-2" style="border-color: var(--accent-color)">
                 <input type="text" id="search" placeholder="WPISZ ID LUB NICK..." class="w-full bg-transparent py-8 px-10 text-white outline-none font-extrabold text-3xl placeholder-white/5 uppercase tracking-tighter text-center">
             </div>
             <div class="flex justify-center">
-                <div class="online-box" id="countBox">
+                <div class="online-box">
                     <span class="text-[11px] font-black uppercase tracking-[0.5em] text-white/30">ONLINE: <span id="count" style="color: var(--accent-color)">0</span></span>
                 </div>
             </div>
@@ -94,10 +77,11 @@
 
         function getHistory(srv) {
             const today = new Date().toLocaleDateString();
-            if (localStorage.getItem(`reset_${srv}`) !== today) { 
-                localStorage.removeItem(`hist_${srv}`); 
-                localStorage.setItem(`reset_${srv}`, today); 
-                return {}; 
+            const storedReset = localStorage.getItem(`reset_${srv}`);
+            if (storedReset !== today) {
+                localStorage.removeItem(`hist_${srv}`);
+                localStorage.setItem(`reset_${srv}`, today);
+                return {};
             }
             return JSON.parse(localStorage.getItem(`hist_${srv}`)) || {};
         }
@@ -109,18 +93,18 @@
             root.style.setProperty('--accent-color', color);
             const r = parseInt(color.slice(1, 3), 16), g = parseInt(color.slice(3, 5), 16), b = parseInt(color.slice(5, 7), 16);
             root.style.setProperty('--accent-glow', `rgba(${r}, ${g}, ${b}, 0.3)`);
-            
             document.getElementById('hexLabel').innerText = color.toUpperCase();
             localStorage.setItem('przmx_color', color);
-            renderList(); // Odśwież listę z nowymi kolorami
+            renderList();
         }
 
         async function fetchData() {
+            // Zmiana na agresywne proxy corsproxy.io
             const proxy = "https://api.corsproxy.io/?url=";
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentSrv}`;
             
             try {
-                const response = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`);
+                const response = await fetch(`${proxy}${encodeURIComponent(target)}&nocache=${Date.now()}`);
                 const d = await response.json();
                 
                 if (d?.Data?.players) {
@@ -138,10 +122,13 @@
                     
                     Object.keys(playerHistory).forEach(name => { if (!currentNames.includes(name)) playerHistory[name].isOnline = false; });
                     localStorage.setItem(`hist_${currentSrv}`, JSON.stringify(playerHistory));
-                    onlinePlayers = d.Data.players.sort((a, b) => a.id - b.id);
+                    onlinePlayers = d.Data.players;
                     renderList();
                 }
-            } catch (e) { console.log("Connection lag..."); setTimeout(fetchData, 5000); }
+            } catch (e) { 
+                console.error("Błąd API:", e);
+                renderList(); // Renderuj chociaż to co w historii
+            }
         }
 
         function renderList() {
@@ -153,15 +140,19 @@
                 return ln.includes('przmx') || ln.includes('kejcpi') || ln.includes('razees');
             };
 
-            const source = val.length > 0 ? Object.keys(playerHistory) : onlinePlayers.map(p => p.name);
+            // Przeszukujemy bazę historyczną, żeby zawsze coś było widać
+            const source = Object.keys(playerHistory);
 
             source.forEach(name => {
-                const h = playerHistory[name]; if(!h) return;
-                const isOnline = h.isOnline; const isGoat = isGoatNick(name);
-                const id = isOnline ? (onlinePlayers.find(op => op.name === name)?.id || h.idHistory.slice(-1)[0]) : h.idHistory.slice(-1)[0];
+                const h = playerHistory[name];
+                const isOnline = h.isOnline; 
+                const isGoat = isGoatNick(name);
+                const id = h.idHistory.slice(-1)[0];
                 
                 if (val && !name.toLowerCase().includes(val) && !id.toString().includes(val)) return;
                 if (showOnlyFavs && !favorites.includes(name)) return;
+                // Jeśli nie ma wyszukiwania, pokazuj tylko online
+                if (!val && !isOnline && !showOnlyFavs) return;
 
                 const card = document.createElement('div');
                 card.className = `neo-card p-6 rounded-2xl flex items-center justify-between ${!isOnline ? 'offline' : ''}`;
@@ -198,25 +189,9 @@
         }
 
         function closeModal() { document.getElementById('overlay').style.display = 'none'; }
-        
-        function toggleFav(n) {
-            const idx = favorites.indexOf(n);
-            idx === -1 ? favorites.push(n) : favorites.splice(idx, 1);
-            localStorage.setItem('przmx_favs', JSON.stringify(favorites));
-            renderList();
-        }
-
-        function toggleFavorites() {
-            showOnlyFavs = !showOnlyFavs;
-            document.getElementById('favToggleBtn').classList.toggle('active', showOnlyFavs);
-            renderList();
-        }
-
-        function handleServerChange(v) { 
-            currentSrv = v; 
-            playerHistory = getHistory(v); 
-            fetchData(); 
-        }
+        function toggleFav(n) { const idx = favorites.indexOf(n); idx === -1 ? favorites.push(n) : favorites.splice(idx, 1); localStorage.setItem('przmx_favs', JSON.stringify(favorites)); renderList(); }
+        function toggleFavorites() { showOnlyFavs = !showOnlyFavs; document.getElementById('favToggleBtn').classList.toggle('active', showOnlyFavs); renderList(); }
+        function handleServerChange(v) { currentSrv = v; playerHistory = getHistory(v); fetchData(); }
 
         document.getElementById('search').oninput = renderList;
         const savedColor = localStorage.getItem('przmx_color'); if(savedColor) updateAccentColor(savedColor);
