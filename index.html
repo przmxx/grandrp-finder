@@ -3,117 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandRP Finder | Personalizacja</title>
+    <title>GrandRP Finder | Neo Custom</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent-color: #f97316; /* Domyślny pomarańcz */
-            --accent-glow: rgba(249, 115, 22, 0.5);
+            --accent-color: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.4);
         }
 
         body { 
-            background-color: #0a0b0d; 
+            background-color: #050607; 
             color: #f8fafc; 
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-image: 
                 linear-gradient(var(--accent-glow) 0.5px, transparent 0.5px),
                 linear-gradient(90deg, var(--accent-glow) 0.5px, transparent 0.5px);
-            background-size: 50px 50px;
+            background-size: 30px 30px;
             min-height: 100vh;
-            transition: background 0.5s ease;
         }
         
         .glow-title {
-            color: #ffffff;
-            text-shadow: 0 0 30px var(--accent-glow);
-            transition: text-shadow 0.3s ease;
+            text-shadow: 0 0 30px var(--accent-color);
         }
 
-        .server-btn {
-            background: rgba(15, 17, 20, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: 0.3s;
-        }
-
-        .server-btn.active {
-            border-color: var(--accent-color);
-            background: var(--accent-glow);
-            color: var(--accent-color);
-        }
-
-        .player-card {
-            background: rgba(20, 22, 26, 0.9);
+        .neo-card {
+            background: rgba(10, 11, 14, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.03);
-            border-left: 4px solid var(--accent-color);
-            backdrop-filter: blur(12px);
-            transition: 0.3s;
+            border-top: 2px solid var(--accent-color);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .player-card:hover {
-            border-color: var(--accent-color);
-            background: var(--accent-glow);
-            transform: translateY(-4px);
+        .neo-card:hover {
+            transform: scale(1.05);
+            border-top-width: 5px;
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
-        .accent-text { color: var(--accent-color); }
-        .accent-bg { background-color: var(--accent-color); }
-        .accent-border { border-color: var(--accent-color); }
+        .custom-input {
+            background: #0d0f12;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid var(--accent-color);
+        }
 
-        /* Panel Kolorów */
-        .color-picker-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
+        /* Panel Personalizacji */
+        .settings-panel {
+            background: rgba(15, 17, 20, 0.9);
+            border: 1px solid var(--accent-color);
+            backdrop-filter: blur(10px);
+        }
+
+        #colorPicker {
+            -webkit-appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
-            border: 2px solid transparent;
-            transition: 0.2s;
+            background: none;
         }
-        .color-picker-dot:hover { transform: scale(1.2); }
-        .color-picker-dot.active { border-color: white; transform: scale(1.1); }
+        #colorPicker::-webkit-color-swatch { border-radius: 8px; border: 2px solid white; }
     </style>
 </head>
 <body class="py-12 px-6">
 
-    <div class="fixed bottom-6 left-6 z-50 bg-[#0f1115] border border-white/10 p-4 rounded-2xl flex flex-col gap-3 shadow-2xl">
-        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Motyw</span>
-        <div class="flex gap-2">
-            <div onclick="changeTheme('#f97316')" class="color-picker-dot bg-orange-500" title="Pomarańcz"></div>
-            <div onclick="changeTheme('#3b82f6')" class="color-picker-dot bg-blue-500" title="Błękit"></div>
-            <div onclick="changeTheme('#10b981')" class="color-picker-dot bg-emerald-500" title="Zieleń"></div>
-            <div onclick="changeTheme('#ec4899')" class="color-picker-dot bg-pink-500" title="Róż"></div>
-            <div onclick="changeTheme('#a855f7')" class="color-picker-dot bg-purple-500" title="Fiolet"></div>
-            <div onclick="changeTheme('#ffffff')" class="color-picker-dot bg-white" title="Biel"></div>
-        </div>
+    <div class="fixed bottom-6 right-6 z-50 settings-panel p-5 rounded-3xl flex flex-col items-center gap-3">
+        <span class="text-[10px] font-black uppercase tracking-widest text-white/50">Kolor Neo</span>
+        <input type="color" id="colorPicker" value="#f97316" oninput="changeTheme(this.value)">
+        <input type="text" id="hexInput" placeholder="#HEX" oninput="changeTheme(this.value)" 
+            class="bg-black/50 text-[10px] w-16 text-center rounded border border-white/10 uppercase py-1">
     </div>
 
     <div class="max-w-6xl mx-auto text-center">
-        <div class="mb-10">
-            <h1 class="text-5xl font-extrabold tracking-tighter italic uppercase glow-title">
-                GRANDRP <span class="accent-text">FINDER</span>
+        <div class="mb-16">
+            <h1 class="text-6xl font-extrabold tracking-tighter italic uppercase glow-title italic">
+                GRANDRP <span id="dynamicTitle" style="color: var(--accent-color)">FINDER</span>
             </h1>
+            <p class="text-white/30 font-bold uppercase tracking-[0.5em] text-[10px] mt-6">System Lokalizacji Cweli v5.0</p>
         </div>
 
-        <div class="flex justify-center gap-4 mb-12">
-            <div onclick="switchServer('8rml8v', this)" class="server-btn active px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm">
-                Serwer 1 (8rml8v)
-            </div>
-            <div onclick="switchServer('dyrx5y', this)" class="server-btn px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm">
-                Serwer 2 (dyrx5y)
-            </div>
+        <div class="flex flex-center justify-center gap-4 mb-12">
+            <button onclick="switchServer('8rml8v', this)" class="server-tab active bg-white/5 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest border border-white/10 hover:border-orange-500 transition-all">Serwer 1</button>
+            <button onclick="switchServer('dyrx5y', this)" class="server-tab bg-white/5 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest border border-white/10 hover:border-orange-500 transition-all">Serwer 2</button>
         </div>
 
-        <div class="max-w-2xl mx-auto mb-16">
-            <div class="bg-[#0f1115] border-b-2 accent-border flex items-center px-8 py-4 rounded-t-2xl mb-4">
-                <input type="text" id="search" placeholder="SZUKAJ OBYWATELA..." 
-                    class="bg-transparent w-full text-center text-white outline-none font-bold placeholder-slate-700 uppercase">
-            </div>
-            <div class="accent-text font-black uppercase tracking-widest text-xs">
-                AKTYWNI: <span id="count" class="text-2xl ml-2 italic">--</span>
+        <div class="max-w-xl mx-auto mb-20">
+            <input type="text" id="search" placeholder="SZUKAJ CWELA PO ID LUB NICKU..." 
+                class="custom-input w-full py-5 px-8 text-center text-white outline-none font-bold text-xl placeholder-white/10 rounded-t-2xl uppercase tracking-widest">
+            <div class="bg-black/40 py-3 rounded-b-2xl border-x border-b border-white/5 text-[10px] font-bold tracking-[0.3em] uppercase opacity-50">
+                Wykryto jednostek: <span id="count" class="text-base" style="color: var(--accent-color)">--</span>
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left"></div>
+        <div id="player-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 text-left">
+            </div>
     </div>
 
     <script>
@@ -121,66 +105,69 @@
         const proxy = "https://api.allorigins.win/raw?url=";
         let allPlayers = [];
 
-        // Funkcja zmiany motywu
         function changeTheme(color) {
+            if(!color.startsWith('#')) color = '#' + color;
             const root = document.documentElement;
             root.style.setProperty('--accent-color', color);
-            // Tworzenie przezroczystości dla poświaty
-            const glow = color === '#ffffff' ? 'rgba(255,255,255,0.2)' : color + '44';
-            root.style.setProperty('--accent-glow', glow);
-            localStorage.setItem('grand_theme', color);
+            root.style.setProperty('--accent-glow', color + '33');
+            document.getElementById('colorPicker').value = color;
+            document.getElementById('hexInput').value = color.toUpperCase();
+            localStorage.setItem('neo_theme', color);
         }
 
-        async function refreshData() {
+        async function update() {
             const target = `https://servers-frontend.fivem.net/api/servers/single/${currentServer}`;
             try {
-                const response = await fetch(`${proxy}${encodeURIComponent(target)}&cache=${Date.now()}`);
-                const data = await response.json();
-                if (data?.Data?.players) {
-                    allPlayers = data.Data.players;
-                    renderUI(allPlayers);
+                const r = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`);
+                const d = await r.json();
+                if (d?.Data?.players) {
+                    // SORTOWANIE OD NAJNIŻSZEGO DO NAJWIĘKSZEGO ID
+                    allPlayers = d.Data.players.sort((a, b) => a.id - b.id);
+                    render(allPlayers);
                 }
-            } catch (e) { console.log("Łączenie..."); }
+            } catch (e) { console.log("Sync..."); }
         }
 
-        function renderUI(list) {
-            const countBox = document.getElementById('count');
-            const listGrid = document.getElementById('player-list');
-            countBox.innerText = list.length;
+        function render(list) {
+            document.getElementById('count').innerText = list.length;
+            const container = document.getElementById('player-list');
             
             if (list.length === 0) {
-                listGrid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-700 font-black uppercase italic opacity-50">Skanowanie sektora...</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-20 opacity-20 uppercase font-black italic">Brak cweli w sektorze</div>';
                 return;
             }
 
-            listGrid.innerHTML = list.map(p => `
-                <div class="player-card p-6 rounded-2xl">
-                    <span class="text-[9px] font-black text-slate-500 uppercase block mb-1">ID Obywatela</span>
-                    <span class="text-3xl font-black text-white block mb-3 leading-none">${p.id}</span>
-                    <div class="h-1 w-6 accent-bg mb-4"></div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase truncate block">${p.name}</span>
+            container.innerHTML = list.map(p => `
+                <div class="neo-card p-6 rounded-xl relative overflow-hidden">
+                    <div class="flex flex-col">
+                        <span class="text-[8px] font-black text-white/30 uppercase tracking-widest mb-1 leading-none">ID CWELA</span>
+                        <span class="text-4xl font-black text-white mb-4 italic leading-none">${p.id}</span>
+                        <span class="text-[10px] font-bold text-white/60 uppercase truncate">
+                            ${p.name}
+                        </span>
+                    </div>
                 </div>
             `).join('');
         }
 
         function switchServer(id, btn) {
-            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.server-tab').forEach(b => b.classList.remove('border-orange-500', 'text-orange-500'));
             currentServer = id;
-            document.getElementById('player-list').innerHTML = '<div class="col-span-full text-center py-20 accent-text animate-pulse font-black uppercase tracking-widest">Przełączanie kanału...</div>';
-            refreshData();
+            update();
         }
 
-        // Wczytaj zapisany motyw
-        const savedTheme = localStorage.getItem('grand_theme');
-        if (savedTheme) changeTheme(savedTheme);
+        const saved = localStorage.getItem('neo_theme');
+        if (saved) changeTheme(saved);
 
-        refreshData();
-        setInterval(refreshData, 30000);
+        update();
+        setInterval(update, 30000);
 
         document.getElementById('search').oninput = (e) => {
             const val = e.target.value.toLowerCase();
-            renderUI(allPlayers.filter(p => p.name.toLowerCase().includes(val) || p.id.toString().includes(val)));
+            const filtered = allPlayers.filter(p => 
+                p.name.toLowerCase().includes(val) || p.id.toString().includes(val)
+            );
+            render(filtered);
         };
     </script>
 </body>
