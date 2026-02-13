@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Player Tracker | by PRZMX</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent-color: #0055FF; 
@@ -49,20 +49,19 @@
             font-weight: 800;
             font-size: 13px;
             color: var(--accent-color);
-            opacity: 0.9;
         }
 
         .neo-card {
             background: rgba(13, 15, 18, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.03);
-            border-top: 3px solid var(--accent-color);
-            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid var(--accent-color);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .neo-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -15px var(--accent-glow);
-            background: rgba(20, 22, 26, 1);
+            transform: scale(1.03);
+            box-shadow: 0 15px 35px -10px var(--accent-glow);
+            background: rgba(22, 25, 30, 1);
         }
 
         .server-select {
@@ -154,7 +153,7 @@
             </div>
         </div>
 
-        <div id="player-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 w-full">
+        <div id="player-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
             <div class="col-span-full py-20 text-center opacity-30 italic">TRWA POBIERANIE DANYCH...</div>
         </div>
     </div>
@@ -167,7 +166,6 @@
             const root = document.documentElement;
             root.style.setProperty('--accent-color', color);
             document.getElementById('hexLabel').innerText = color.toUpperCase();
-            
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
@@ -181,13 +179,11 @@
             try {
                 const r = await fetch(`${proxy}${encodeURIComponent(target)}&t=${Date.now()}`);
                 const d = await r.json();
-                
                 if (d && d.Data && d.Data.players) {
                     allPlayers = d.Data.players.sort((a, b) => a.id - b.id);
                     renderList(allPlayers);
                 }
             } catch (e) {
-                console.error("Fetch error:", e);
                 setTimeout(fetchData, 5000);
             }
         }
@@ -202,21 +198,22 @@
             }
 
             container.innerHTML = list.map(p => {
-                // LOGIKA DLA GOATÓW
                 const isGoat = p.name.toLowerCase().includes('przmx') || p.name.toLowerCase().includes('kejcpi');
                 const label = isGoat ? 'ID GOATA' : 'ID CWELA';
                 
                 return `
-                    <div class="neo-card p-7 rounded-3xl relative group overflow-hidden">
-                        <div class="flex flex-col relative z-10 text-left">
-                            <span class="text-[8px] font-black ${isGoat ? 'text-white' : 'text-white/20'} uppercase tracking-widest mb-1 leading-none">
+                    <div class="neo-card p-6 rounded-2xl flex flex-col justify-between group overflow-hidden text-left relative">
+                        <div class="z-10">
+                            <span class="text-[9px] font-black ${isGoat ? 'text-white' : 'text-white/30'} uppercase tracking-[0.2em] block mb-2">
                                 ${label}
                             </span>
-                            <span class="text-4xl font-black text-white mb-5 leading-none italic">${p.id}</span>
-                            <div class="h-[4px] w-8 mb-5 transition-all group-hover:w-full" style="background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color)"></div>
-                            <span class="text-[11px] font-bold ${isGoat ? 'text-white' : 'text-slate-400'} uppercase truncate tracking-tighter">
+                            <h3 class="text-2xl font-bold ${isGoat ? 'text-white' : 'text-slate-200'} truncate uppercase tracking-tight mb-4">
                                 ${p.name}
-                            </span>
+                            </h3>
+                        </div>
+                        <div class="flex items-end justify-between z-10">
+                            <div class="h-[3px] w-12 rounded-full transition-all group-hover:w-20" style="background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color)"></div>
+                            <span class="text-4xl font-black italic text-white opacity-90">${p.id}</span>
                         </div>
                     </div>
                 `;
