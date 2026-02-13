@@ -2,64 +2,70 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>GrandRP RESET | PRZMX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandRP Tracker | by PRZMX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; }
-        .card { background: #111; border: 1px solid #333; padding: 10px; margin-bottom: 5px; border-radius: 5px; }
-        .id-num { color: #0f5; font-weight: bold; font-size: 1.5rem; }
+        :root { --accent-color: #00FF55; }
+        body { background: #050608; color: #fff; font-family: sans-serif; min-height: 100vh; margin: 0; }
+        .neo-card { background: #0d0f12; border-left: 4px solid var(--accent-color); padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+        .cwela-label { color: rgba(255, 255, 255, 0.15); font-size: 8px; font-weight: 900; text-transform: uppercase; }
+        .id-num { color: var(--accent-color); font-weight: 900; font-size: 1.8rem; font-style: italic; }
     </style>
 </head>
-<body class="p-5">
+<body class="p-6">
 
-    <div class="max-w-xl mx-auto">
-        <h1 class="text-2xl font-bold mb-4">GRANDRP TRACKER - RESET</h1>
+    <div class="max-w-2xl mx-auto text-center">
+        <h1 class="text-5xl font-black italic mb-2 uppercase">GRANDRP <span style="color: var(--accent-color)">TRACKER</span></h1>
+        <p class="text-[10px] tracking-[0.5em] text-white/20 mb-10">by PRZMX</p>
         
-        <div class="mb-5 flex gap-2">
-            <button onclick="fetchData()" class="bg-blue-600 px-4 py-2 rounded font-bold">ODŚWIEŻ</button>
-            <div id="status" class="text-yellow-500 py-2">Czekam...</div>
+        <div class="flex justify-center gap-4 mb-8">
+            <button onclick="fetchData()" class="bg-white/5 border border-white/10 px-8 py-3 rounded-xl font-black uppercase text-xs active:bg-green-500 transition-all">ODŚWIEŻ</button>
         </div>
+        
+        <div id="debug" class="text-[10px] text-yellow-500 mb-6 font-mono uppercase">Status: Oczekiwanie...</div>
 
-        <input type="text" id="search" placeholder="Szukaj nick/id..." oninput="render()" class="w-full p-3 bg-gray-900 border border-gray-700 rounded mb-5">
+        <input type="text" id="search" placeholder="WPISZ ID LUB NICK..." oninput="render()" class="w-full bg-white/5 border-b-2 border-green-500 p-5 text-center text-2xl font-black outline-none mb-6">
 
-        <div class="mb-2 text-gray-400 uppercase text-xs">Online: <span id="count">0</span></div>
-        <div id="list"></div>
+        <div class="mb-4 text-xs font-black text-white/30 uppercase tracking-widest">Online: <span id="count" class="text-green-500">0</span></div>
+        <div id="player-list" class="grid grid-cols-1 gap-3 text-left"></div>
     </div>
 
     <script>
         let players = [];
+        const srv = '8rml8v';
 
         async function fetchData() {
-            const status = document.getElementById('status');
-            status.innerText = "POBIERANIE...";
-            status.style.color = "yellow";
-
-            const target = "https://servers-frontend.fivem.net/api/servers/single/8rml8v";
-            const proxy = "https://api.allorigins.win/raw?url=";
+            const dbg = document.getElementById('debug');
+            dbg.innerText = "Status: Próba połączenia...";
+            
+            // Najbardziej stabilna bramka dla FiveM
+            const target = `https://servers-frontend.fivem.net/api/servers/single/${srv}`;
+            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}&cache=${Date.now()}`;
 
             try {
-                const res = await fetch(proxy + encodeURIComponent(target) + "&t=" + Date.now());
+                const res = await fetch(proxy);
+                if (!res.ok) throw new Error("Blokada Proxy");
+                
                 const data = await res.json();
-
                 if (data?.Data?.players) {
                     players = data.Data.players.sort((a,b) => a.id - b.id);
-                    status.innerText = "GOTOWE";
-                    status.style.color = "green";
+                    dbg.innerText = "Status: Połączono pomyślnie";
+                    dbg.style.color = "#00FF55";
                     render();
                 } else {
-                    status.innerText = "BŁĄD DANYCH";
-                    status.style.color = "red";
+                    dbg.innerText = "Status: Serwer zwrócił puste dane";
                 }
             } catch (e) {
-                status.innerText = "BŁĄD POŁĄCZENIA";
-                status.style.color = "red";
+                dbg.innerText = "Status: Błąd sieci (CORS/TIMEOUT)";
+                dbg.style.color = "#ef4444";
                 console.error(e);
             }
         }
 
         function render() {
             const val = document.getElementById('search').value.toLowerCase();
-            const container = document.getElementById('list');
+            const container = document.getElementById('player-list');
             container.innerHTML = "";
             
             const filtered = players.filter(p => 
@@ -69,16 +75,16 @@
             document.getElementById('count').innerText = players.length;
 
             filtered.forEach(p => {
-                const div = document.createElement('div');
-                div.className = "card flex justify-between items-center";
-                div.innerHTML = `
+                const card = document.createElement('div');
+                card.className = "neo-card flex justify-between items-center";
+                card.innerHTML = `
                     <div>
-                        <div class="text-xs text-gray-500">NICK</div>
-                        <div class="font-bold">${p.name}</div>
+                        <div class="cwela-label">NICK CWELA</div>
+                        <div class="font-bold text-lg">${p.name}</div>
                     </div>
                     <div class="id-num">${p.id}</div>
                 `;
-                container.appendChild(div);
+                container.appendChild(card);
             });
         }
 
