@@ -19,7 +19,6 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- DESIGNERSKIE TŁO --- */
         .visual-effects {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             overflow: hidden; background: radial-gradient(circle at 50% -20%, rgba(0, 136, 255, 0.1), transparent 50%);
@@ -59,7 +58,6 @@
             display: flex; gap: 10px; margin-top: 25px; justify-content: center; flex-wrap: wrap;
         }
 
-        /* --- POPRAWIONE OKNO WPISYWANIA --- */
         .custom-input-box {
             margin-top: 20px; display: flex; gap: 10px; 
             max-height: 0; opacity: 0; overflow: hidden;
@@ -74,7 +72,7 @@
         .small-input {
             background: rgba(0,0,0,0.5); border: 1px solid var(--main);
             color: white; border-radius: 8px; padding: 8px 15px; font-family: 'Orbitron';
-            text-align: center; font-size: 14px; outline: none; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            text-align: center; font-size: 14px; outline: none;
         }
 
         .nav-bar { 
@@ -169,7 +167,6 @@
     <div id="results"></div>
 
     <script>
-        // --- STORAGE & STATE ---
         let currentServerCode = localStorage.getItem('last_srv_code') || '8rml8v';
         let currentServerName = localStorage.getItem('last_srv_name') || 'GRANDRP';
         let customCodeStored = localStorage.getItem('user_custom_code') || '';
@@ -191,16 +188,13 @@
         const cp = document.getElementById('colorPicker');
         cp.addEventListener('input', (e) => applyColor(e.target.value));
 
-        // Toggles the custom panel
         function toggleCustomPanel() {
             const box = document.getElementById('c-box');
             box.classList.toggle('visible');
             if(customCodeStored) document.getElementById('c-input').value = customCodeStored;
         }
 
-        // Logic for Grand/BetterSide buttons
         function selectServer(code, name) {
-            // Zamknij panel własny przy wyborze stałych serwerów
             document.getElementById('c-box').classList.remove('visible');
             switchServer(code, name);
         }
@@ -211,7 +205,6 @@
                 customCodeStored = val;
                 localStorage.setItem('user_custom_code', val);
                 switchServer(val, 'CUSTOM');
-                // Opcjonalnie: zamknij po zatwierdzeniu
                 document.getElementById('c-box').classList.remove('visible');
             }
         }
@@ -225,10 +218,17 @@
             
             document.getElementById('main-title').innerHTML = `${currentServerName} <span>TRACKER</span>`;
             
+            // --- POPRAWKA PODŚWIETLANIA ---
             document.querySelectorAll('.btn-server').forEach(b => b.classList.remove('active'));
-            const knownBtn = document.getElementById(`srv-${code}`);
-            if(knownBtn) knownBtn.classList.add('active');
-            else document.getElementById('srv-custom').classList.add('active');
+            
+            // Sprawdź czy to jeden ze stałych serwerów
+            const staticCodes = ['8rml8v', 'dyrx5y'];
+            if (staticCodes.includes(code)) {
+                document.getElementById(`srv-${code}`).classList.add('active');
+            } else {
+                // Jeśli kod nie jest na liście stałych, podświetl WŁASNY
+                document.getElementById('srv-custom').classList.add('active');
+            }
             
             fetchS();
         }
@@ -280,13 +280,13 @@
             res.innerHTML = html || '<div style="opacity:0.2; width:100%; text-align:center; padding-top:50px;">BRAK WYNIKÓW</div>';
         }
 
-        // --- INIT ---
         applyColor(savedColor);
-        // Jeśli przy starcie jesteśmy na customowym kodzie, upewnij się, że UI to pokazuje
-        if (currentServerName.startsWith('SERVER [')) {
-            switchServer(currentServerCode, 'CUSTOM');
-        } else {
+        // Inicjalizacja podświetlenia przy starcie
+        const staticCodes = ['8rml8v', 'dyrx5y'];
+        if (staticCodes.includes(currentServerCode)) {
             switchServer(currentServerCode, currentServerName);
+        } else {
+            switchServer(currentServerCode, 'CUSTOM');
         }
         setInterval(fetchS, 35000);
     </script>
